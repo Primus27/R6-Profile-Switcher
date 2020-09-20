@@ -60,6 +60,24 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
 # Usage
  - Run 'switch_v3.py' by double clicking on the file
 
+# Troubleshooting
+
+**Issue:** Double clicking on the program opens a text editor or other program.
+
+**Solution:** File associations are set up wrong. Right click on the python file and select `open with`. Choose `python` from the list or click `more apps 🠫` and select `python`.
+
+&nbsp;
+
+**Issue:** Program does not launch / immediately crashes.
+
+**Solution:** This happens because Python was not added to your (environment variables) PATH (See installation). You can verify this by opening command prompt where the program is located and typing `python switch_v3.py`. Receiving an error such as `this system cannot run the specified program` or `'python' is not recognized as an internal or external command` means that you need to add python to your PATH. [This video shows you how to do it.](https://www.youtube.com/watch?v=Y2q_b4ugPWk)
+
+&nbsp;
+
+**Issue:** Program launches and displays title (program name and developer...) but does not load menu options immediately.
+
+**Solution:** This happens because an API call is made to R6tabs to check what accounts are on your system. Unfortunately, there is nothing you can do here as it typically takes 1-2 seconds to receive a response.
+
 # Changelog
 ### Version 1.0.0 - Initial release
  - Internal (not available)
@@ -73,6 +91,9 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
  - Added on the fly backup enable / disable
  - Added player ID to player name resolver - no more copy/pasting paths
  - Added 'active profile' feedback before profile selection
+ 
+### Version 3.0.1 - Troubleshooting FAQ
+ - Added troubleshooting FAQ for those having issues
  
 # Screenshots
 
