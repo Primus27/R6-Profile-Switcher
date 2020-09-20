@@ -60,7 +60,13 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
 # Usage
  - Run 'switch_v3.py' by double clicking on the file
 
-# Troubleshooting
+# Troubleshooting / FAQ
+
+**Question:** Does this swap your skins by swapping out your save file? Because that's technically bannable isn't it? Or only if its for skins you don't have?
+
+**Answer:** It swaps the save file (1.save) with one that belongs to you (and only you). <ins>This way it doesn't swap skins with anything you don't have</ins>. Bear in mind, "1.save" only handles skins and attachments and considering that this script uses "copies" of your profiles, it will never equip something that you have never equipped yourself.
+
+&nbsp;
 
 **Issue:** Double clicking on the program opens a text editor or other program.
 
@@ -77,6 +83,12 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
 **Issue:** Program launches and displays title (program name and developer...) but does not load menu options immediately.
 
 **Solution:** This happens because an API call is made to R6tabs to check what accounts are on your system. Unfortunately, there is nothing you can do here as it typically takes 1-2 seconds to receive a response.
+
+&nbsp;
+
+**Issue:** Program is not recognising my accounts.
+
+**Solution:** The program was set up in a way that users don't have to enter any information, including drive paths. This means if you have your UPlay launcher installed on another drive that isn't C://, Switch V3 will not work. Switch V2 remains unaffected by this.
 
 # Changelog
 ### Version 1.0.0 - Initial release
@@ -95,6 +107,9 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
 ### Version 3.0.1 - Troubleshooting FAQ
  - Added troubleshooting FAQ for those having issues
  
+### Version 3.0.2 - Updated troubleshooting / FAQ
+ - Updated troubleshooting FAQ for those having issues
+ 
 # Screenshots
 
 ![](readme_files/demo/main_menu_screenshot.png)
@@ -108,9 +123,9 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
 
 &nbsp;
 
-# Legacy (v2.0.0)
+# Legacy (v2)
 
-NOTE: switch.py v2.0.0 is legacy software and should only be used if you encounter issues with v3.0.0.
+NOTE: switch_v2.py is legacy software and should only be used if you encounter issues with v3.
 The newer version is however backwards compatible with the old version and vice versa.
 This means your profiles will still work regardless of which version are using.
 
