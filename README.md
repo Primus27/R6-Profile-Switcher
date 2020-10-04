@@ -110,6 +110,9 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
 ### Version 3.0.2 - Updated troubleshooting / FAQ
  - Updated troubleshooting FAQ for those having issues
  
+### Version 3.1.0 - Siege process checker
+ - Added an event to check whether R6 Siege (process) is running during script execution. Script will exit if Siege is running to prevent any issues with profiles not switching correctly.
+ 
 # Screenshots
 
 ![](readme_files/demo/main_menu_screenshot.png)

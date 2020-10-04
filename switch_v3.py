@@ -1,7 +1,7 @@
 """
 Title: Switch R6 Siege profiles from default (competitive) profile to main
 Author: Primus27
-Version: 3.0.0
+Version: 3.1.0
 """
 
 # Import packages
@@ -10,8 +10,9 @@ from sys import exit
 from datetime import datetime
 from shutil import copy
 import requests
+import psutil
 
-program_version = "3.0.0"
+program_version = "3.1.0"
 # In the event that a backup cannot be made, close program
 backup_failsafe = True
 
@@ -23,6 +24,26 @@ def close_program():
     print()
     input("[?] Press ENTER to exit")
     exit()
+
+
+def is_process_active(process_name):
+    """
+    Function to check whether process is running on PC
+    :param process_name: string or list of process i.e. discord.exe
+        (case insensitive)
+    :return: True / False on whether it is running
+    """
+    if isinstance(process_name, str):
+        return process_name.lower() in [p.name().lower() for p in
+                                        psutil.process_iter()]
+    elif isinstance(process_name, list):
+        # Iterate through process names provided
+        for process in process_name:
+            if process.lower() in [p.name().lower() for p in
+                                   psutil.process_iter()]:
+                return True
+        # Only reached if non of the names returned True
+        return False
 
 
 def rename_file(current_path, new_path):
@@ -245,6 +266,12 @@ def backup_profile(main_path):
 if __name__ == '__main__':
     print(f"R6 Profile Switcher (v{program_version})\n"
           " - Developed by Primus27 (github.com/primus27)\n")
+
+    # R6 Siege running
+    if is_process_active(["rainbowsix_vulkan.exe", "rainbowsix.exe"]):
+        print("[-] R6 Siege already running. Please close Siege to switch "
+              "profiles.")
+        close_program()
 
     # Get list of accounts and resolve to ID & name pairs, removing any errors
     acc_id_list = get_all_accounts(name=True)
