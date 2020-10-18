@@ -1,7 +1,7 @@
 """
 Title: Switch R6 Siege profiles from default (competitive) profile to main
 Author: Primus27
-Version: 3.1.0
+Version: 3.1.1
 """
 
 # Import packages
@@ -12,7 +12,7 @@ from shutil import copy
 import requests
 import psutil
 
-program_version = "3.1.0"
+program_version = "3.1.1"
 # In the event that a backup cannot be made, close program
 backup_failsafe = True
 
@@ -115,6 +115,7 @@ def resolve_uplay_info(account, reverse=False):
 
     try:
         r = requests.get(url)
+        #status_code = r.status_code
         r.raise_for_status()
     except requests.exceptions.HTTPError:  # status_code != 200
         return -1, "API Error!"
@@ -135,6 +136,15 @@ def resolve_uplay_info(account, reverse=False):
             # Response is a 204 (No Content) or contains invalid JSON
             return -1, "API call successful but unable to decode contents."
         else:
+            try:
+                response_status = int(json_info["status"])
+                response_message = f"{str(json_info['error'])} " \
+                                   f"{str(json_info['message'])}"
+            except ValueError:
+                return -1, "Request Information Missing!"
+            else:
+                if response_status != 200:
+                    return -1, response_message
             if reverse:
                 player_id = next(iter(json_info["players"]))
                 return player_id, account
@@ -187,7 +197,8 @@ def main_menu(backup_flag, account_list):
 
     while choice not in available_choices:
         print("00. Toggle backup feature")
-        print(*menu_output, sep="\n")  # Output all account names
+        if len(menu_output) > 0:
+            print(*menu_output, sep="\n")  # Output all account names
         print("99. Exit")
         print(f"[{file_output_icon}] Backup")
         print()
@@ -273,12 +284,36 @@ if __name__ == '__main__':
               "profiles.")
         close_program()
 
+    """
+    # **Will be removed in later versions**
     # Get list of accounts and resolve to ID & name pairs, removing any errors
     acc_id_list = get_all_accounts(name=True)
     acc_resolve_list = [resolve_uplay_info(player_id) for player_id
                         in acc_id_list]
+    acc_resolve_err = [pair for pair in acc_resolve_list if pair[0] == -1]
     acc_resolve_list_sanitised = [pair for pair in acc_resolve_list
                                   if pair[0] != -1]
+    """
+
+    # Get list of accounts and resolve to ID & name pairs, removing any errors
+    acc_id_list = get_all_accounts(name=True)
+    acc_resolve_list_sanitised = []
+    newline=False
+
+    for player_id in acc_id_list:
+        info = resolve_uplay_info(player_id)
+
+        # Error obtaining account info
+        if info[0] == -1:
+            print(f"[-] Unable to retrieve: {player_id}.\t"
+                  f"Reason: {str(info[1])}")
+            newline=True
+        # No error
+        else:
+            acc_resolve_list_sanitised.append(info)
+
+    if newline:
+        print()
 
     # Launch menu and capture input
     main_menu_data = main_menu(backup_flag=True,

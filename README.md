@@ -112,7 +112,11 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
  
 ### Version 3.1.0 - Siege process checker
  - Added an event to check whether R6 Siege (process) is running during script execution. Script will exit if Siege is running to prevent any issues with profiles not switching correctly.
- 
+
+### Version 3.1.1 - API error feedback
+ - Correct handling of R6Tabs API error, even when they return a code 200 with missing information
+ - User now informed if profiles could not be resolved
+
 # Screenshots
 
 ![](readme_files/demo/main_menu_screenshot.png)
