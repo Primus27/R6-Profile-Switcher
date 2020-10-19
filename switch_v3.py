@@ -12,7 +12,7 @@ import requests
 import psutil
 from string import ascii_uppercase
 
-program_version = "3.2.0"
+program_version = "3.2.1"
 # In the event that a backup cannot be made, close program
 backup_failsafe = True
 

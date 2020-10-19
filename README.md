@@ -13,13 +13,13 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
     * [Is this a cheat program?](https://github.com/Primus27/R6-Profile-Switcher#question-1)
 * [Troubleshooting](https://github.com/Primus27/R6-Profile-Switcher#troubleshooting)
     * [Program not launching](https://github.com/Primus27/R6-Profile-Switcher#issue-1)
-    * [Program crashes immediately](https://github.com/Primus27/R6-Profile-Switcher#issue-1)
-    * [Program hangs at launch](https://github.com/Primus27/R6-Profile-Switcher#issue-1)
-    * [Accounts not recognised](https://github.com/Primus27/R6-Profile-Switcher#issue-1)
+    * [Program crashes immediately](https://github.com/Primus27/R6-Profile-Switcher#issue-2)
+    * [Program hangs at launch](https://github.com/Primus27/R6-Profile-Switcher#issue-3)
+    * [Accounts not recognised](https://github.com/Primus27/R6-Profile-Switcher#issue-4)
 * [Changelog](https://github.com/Primus27/R6-Profile-Switcher#changelog)
 * [Screenshots](https://github.com/Primus27/R6-Profile-Switcher#screenshots)
 * [Legacy v2](https://github.com/Primus27/R6-Profile-Switcher#legacy-v2)   
-    * [Screenshots](https://github.com/Primus27/R6-Profile-Switcher#screenshots)
+    * [Screenshots](https://github.com/Primus27/R6-Profile-Switcher#screenshots-1)
     * [Requirements and Installation](https://github.com/Primus27/R6-Profile-Switcher#requirements-and-installation-1)
     * [Getting your Siege ID](https://github.com/Primus27/R6-Profile-Switcher#multiple-siege-accounts)
 
@@ -147,6 +147,9 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
  - Updated README.md w/ contents page, etc.
  - Now supports profiles when uplay is stored on <u>other</u> drives (A-Z)
  - Now supports profiles when Siege is launched through Steam
+ 
+### Version 3.2.1 - Updated README.md
+ - Updated README.md
 
 # Screenshots
 
