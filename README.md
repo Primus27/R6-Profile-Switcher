@@ -4,6 +4,27 @@
 
 No more swapping files whenever you want to scrim, the R6 Profile Switcher does everything for you. You can easily switch between your competitive profile (with default skins) and your skins that you use in ranked (i.e. Elites, Ember Rise skins...).
 
+# Contents
+* [Features](https://github.com/Primus27/R6-Profile-Switcher#features)
+    * [Demo](https://github.com/Primus27/R6-Profile-Switcher#demo)
+* [Requirements and Installation](https://github.com/Primus27/R6-Profile-Switcher#requirements-and-installation)
+* [Usage](https://github.com/Primus27/R6-Profile-Switcher#usage)
+* [FAQ](https://github.com/Primus27/R6-Profile-Switcher#faq)
+    * [Is this a cheat program?](https://github.com/Primus27/R6-Profile-Switcher#question-1)
+* [Troubleshooting](https://github.com/Primus27/R6-Profile-Switcher#troubleshooting)
+    * [Program not launching](https://github.com/Primus27/R6-Profile-Switcher#issue-1)
+    * [Program crashes immediately](https://github.com/Primus27/R6-Profile-Switcher#issue-1)
+    * [Program hangs at launch](https://github.com/Primus27/R6-Profile-Switcher#issue-1)
+    * [Accounts not recognised](https://github.com/Primus27/R6-Profile-Switcher#issue-1)
+* [Changelog](https://github.com/Primus27/R6-Profile-Switcher#changelog)
+* [Screenshots](https://github.com/Primus27/R6-Profile-Switcher#screenshots)
+* [Legacy v2](https://github.com/Primus27/R6-Profile-Switcher#legacy-v2)   
+    * [Screenshots](https://github.com/Primus27/R6-Profile-Switcher#screenshots)
+    * [Requirements and Installation](https://github.com/Primus27/R6-Profile-Switcher#requirements-and-installation-1)
+    * [Getting your Siege ID](https://github.com/Primus27/R6-Profile-Switcher#multiple-siege-accounts)
+
+&nbsp;
+
 # Features
  - Easily switch between profiles by navigating the intuitive menus.
  - Automatically retrieves account names on your PC so you don't have to do any work figuring out which account ID is the right one.
@@ -60,32 +81,37 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
 # Usage
  - Run 'switch_v3.py' by double clicking on the file
 
-# Troubleshooting / FAQ
+# FAQ
 
+### Question 1
 **Question:** Does this swap your skins by swapping out your save file? Because that's technically bannable isn't it? Or only if its for skins you don't have?
 
-**Answer:** It swaps the save file (1.save) with one that belongs to you (and only you). <ins>This way it doesn't swap skins with anything you don't have</ins>. Bear in mind, "1.save" only handles skins and attachments and considering that this script uses "copies" of your profiles, it will never equip something that you have never equipped yourself.
+**Answer:** This program is not a cheat program and does not hook into the game. It swaps the save file (1.save) with one that belongs to you (and only you). <ins>This way it doesn't swap skins with anything you don't have</ins>. Bear in mind, "1.save" only handles skins and attachments and considering that this script uses "copies" of your profiles, it will never equip something that you have never equipped yourself.
 
-&nbsp;
+# Troubleshooting
 
+### Issue 1
 **Issue:** Double clicking on the program opens a text editor or other program.
 
 **Solution:** File associations are set up wrong. Right click on the python file and select `open with`. Choose `python` from the list or click `more apps 🠫` and select `python`.
 
 &nbsp;
 
+### Issue 2
 **Issue:** Program does not launch / immediately crashes.
 
 **Solution:** This happens because Python was not added to your (environment variables) PATH (See installation). You can verify this by opening command prompt where the program is located and typing `python switch_v3.py`. Receiving an error such as `this system cannot run the specified program` or `'python' is not recognized as an internal or external command` means that you need to add python to your PATH. [This video shows you how to do it.](https://www.youtube.com/watch?v=Y2q_b4ugPWk)
 
 &nbsp;
 
+### Issue 3
 **Issue:** Program launches and displays title (program name and developer...) but does not load menu options immediately.
 
 **Solution:** This happens because an API call is made to R6tabs to check what accounts are on your system. Unfortunately, there is nothing you can do here as it typically takes 1-2 seconds to receive a response.
 
 &nbsp;
 
+### Issue 4
 **Issue:** Program is not recognising my accounts.
 
 **Solution:** The program was set up in a way that users don't have to enter any information, including drive paths. This means if you have your UPlay launcher installed on another drive that isn't C://, Switch V3 will not work. Switch V2 remains unaffected by this.
@@ -116,6 +142,11 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
 ### Version 3.1.1 - API error feedback
  - Correct handling of R6Tabs API error, even when they return a code 200 with missing information
  - User now informed if profiles could not be resolved
+ 
+### Version 3.2.0 - Steam & multi-drive support
+ - Updated README.md w/ contents page, etc.
+ - Now supports profiles when uplay is stored on <u>other</u> drives (A-Z)
+ - Now supports profiles when Siege is launched through Steam
 
 # Screenshots
 

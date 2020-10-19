@@ -1,7 +1,6 @@
 """
 Title: Switch R6 Siege profiles from default (competitive) profile to main
 Author: Primus27
-Version: 3.1.1
 """
 
 # Import packages
@@ -11,8 +10,9 @@ from datetime import datetime
 from shutil import copy
 import requests
 import psutil
+from string import ascii_uppercase
 
-program_version = "3.1.1"
+program_version = "3.2.0"
 # In the event that a backup cannot be made, close program
 backup_failsafe = True
 
@@ -86,18 +86,42 @@ def copy_file(current_path, new_path, ctx, msg):
         print(msg)
 
 
-def get_all_accounts(name=False):
+def get_all_accounts():
     """
-    Get a list of all accounts on the system
-    :return: If name, list containing account IDs.
-             Else, list item containing path objects of account directories
+    Get all profile paths, regardless of drives
+    :return: List of profile paths, including steam (1843) / uplay (635)
+             folder at end
     """
-    savegames_path = Path(r'C:\Program Files (x86)\Ubisoft\Ubisoft Game '
-                          r'Launcher\savegames')
-    if name:
-        return [f.name for f in savegames_path.glob("*") if f.is_dir()]
-    else:
-        return [f for f in savegames_path.glob("*") if f.is_dir()]
+    # Get all possible drive letters as paths
+    valid_drive_letters = [Path(f"{letter}:\\") for letter in ascii_uppercase]
+
+    # Reduce to all drives found on system
+    potential_drive_savegames_path = [letter / "Program Files (x86)\\Ubisoft\\"
+                                               "Ubisoft Game Launcher\\"
+                                               "savegames" for letter in
+                                      valid_drive_letters if letter.exists()]
+
+    # Reduce to ones where Ubisoft savegames folder exists
+    drive_savegames_path = [path for path in potential_drive_savegames_path
+                            if path.is_dir()]
+
+    # Get all accounts
+    accounts_paths = []
+    for drive in drive_savegames_path:
+        accounts_list = [folder for folder in drive.glob("*")
+                         if folder.is_dir()]
+        accounts_paths.extend(accounts_list)
+
+    # Append 635 / 1843 depending on whether the folders exist
+    uplay_profile_paths = [path / "635" for path in accounts_paths
+                           if (path / "635").is_dir()]
+    steam_profile_paths = [path / "1843" for path in accounts_paths
+                           if (path / "1843").is_dir()]
+
+    profile_paths = uplay_profile_paths.copy()
+    profile_paths.extend(steam_profile_paths)
+
+    return profile_paths
 
 
 def resolve_uplay_info(account, reverse=False):
@@ -203,7 +227,7 @@ def main_menu(backup_flag, account_list):
         print(f"[{file_output_icon}] Backup")
         print()
 
-        choice = input("[?] Option:")
+        choice = input("[?] Option:").strip()
         separator(line=True, linefeed_post=True)
 
         if choice in available_choices:
@@ -239,7 +263,7 @@ def profile_selection_menu():
         print("99. Exit")
         print()
 
-        choice = input("[?] Option:")
+        choice = input("[?] Option:").strip()
         separator(line=True, linefeed_post=True)
 
         if choice in available_choices:
@@ -259,9 +283,12 @@ def profile_selection_menu():
 def backup_profile(main_path):
     """
     Create a backup of the active 1.save profile
+    :param main_path: Profile path
     """
     # Create the backup directory if it does not already exist
     backup_dir = main_path / "backup"
+    one_dot_save_path = main_path / "1.save"
+
     if not backup_dir.is_dir():
         backup_dir.mkdir(parents=True, exist_ok=True)
 
@@ -270,11 +297,14 @@ def backup_profile(main_path):
     backup_path = backup_dir / f"profile {timestamp}.bak"
 
     # Backup
-    copy_file(ubi_profile_path, backup_path, ctx="Backup",
+    copy_file(one_dot_save_path, backup_path, ctx="Backup",
               msg="[+] Profile backup created")
 
 
-if __name__ == '__main__':
+def main():
+    """
+    Main method
+    """
     print(f"R6 Profile Switcher (v{program_version})\n"
           " - Developed by Primus27 (github.com/primus27)\n")
 
@@ -284,21 +314,11 @@ if __name__ == '__main__':
               "profiles.")
         close_program()
 
-    """
-    # **Will be removed in later versions**
     # Get list of accounts and resolve to ID & name pairs, removing any errors
-    acc_id_list = get_all_accounts(name=True)
-    acc_resolve_list = [resolve_uplay_info(player_id) for player_id
-                        in acc_id_list]
-    acc_resolve_err = [pair for pair in acc_resolve_list if pair[0] == -1]
-    acc_resolve_list_sanitised = [pair for pair in acc_resolve_list
-                                  if pair[0] != -1]
-    """
-
-    # Get list of accounts and resolve to ID & name pairs, removing any errors
-    acc_id_list = get_all_accounts(name=True)
+    acc_path_list = get_all_accounts()
+    acc_id_list = [Path(path).parts[-2] for path in acc_path_list]
     acc_resolve_list_sanitised = []
-    newline=False
+    newline = False
 
     for player_id in acc_id_list:
         info = resolve_uplay_info(player_id)
@@ -307,7 +327,7 @@ if __name__ == '__main__':
         if info[0] == -1:
             print(f"[-] Unable to retrieve: {player_id}.\t"
                   f"Reason: {str(info[1])}")
-            newline=True
+            newline = True
         # No error
         else:
             acc_resolve_list_sanitised.append(info)
@@ -322,17 +342,23 @@ if __name__ == '__main__':
     active_player_name = main_menu_data[0][1]
     backup_mode = main_menu_data[1]
 
-    profile_path = Path(r"C:\Program Files (x86)\Ubisoft\Ubisoft Game Launcher"
-                        r"\savegames") / active_player_id / "635"
+    profile_path_list = [path for path in acc_path_list
+                         if active_player_id in str(path)]
 
-    # Check if path exists
-    if not profile_path.is_dir():
-        print("[-] Unable to access profile directory - expected path does "
-              "not exist.")
+    try:
+        profile_path = profile_path_list[0]
+    except IndexError:
+        print("[-] Unable to access profile directory - could not establish "
+              "profile path.")
         close_program()
+    else:
+        # Check if path exists
+        if not profile_path.is_dir():
+            print("[-] Unable to access profile directory - expected path "
+                  "does not exist.")
+            close_program()
 
     # Enumerate files and define profile defaults
-    path_files = [f for f in profile_path.glob("*") if f.is_file()]
     ubi_profile_path = profile_path / "1.save"
     main_profile_path = profile_path / "1.save.main.bak"
     comp_profile_path = profile_path / "1.save.competitive.bak"
@@ -364,7 +390,7 @@ if __name__ == '__main__':
         elif main_profile_status and not comp_profile_status:
             active_profile = "competitive"
         else:
-            active_profile = "error"
+            active_profile = "internal error"
 
         # Output active profile
         print(f"Current Profile: {str(active_profile).title()}")
@@ -388,15 +414,19 @@ if __name__ == '__main__':
         elif active_profile == "main" and profile_select_data == "competitive":
             rename_file(ubi_profile_path, main_profile_path)
             rename_file(comp_profile_path, ubi_profile_path)
-        elif active_profile == "error":
+        elif active_profile == "internal error":
             print("[-] Unable to make any changes. Current profile could not "
                   "be established")
         # Competitive -> Competitive or Main -> Main
         elif active_profile == profile_select_data:
             print("[*] No changes made")
 
-        if not active_profile == "error":
+        if not active_profile == "internal error":
             print(f"[*] Old Profile: {active_profile.title()}\n"
                   f"[*] Current Profile: {profile_select_data.title()}")
 
     close_program()
+
+
+if __name__ == '__main__':
+    main()
