@@ -11,10 +11,143 @@ from shutil import copy
 import requests
 import psutil
 from string import ascii_uppercase
+from selenium import webdriver
+import selenium.common.exceptions as selenium_exceptions
+from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as selenium_expected
+from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager as WDM
+from os import environ
+import time
 
-program_version = "3.2.1"
+program_version = "3.3.0"
 # In the event that a backup cannot be made, close program
 backup_failsafe = True
+
+
+class ChromeSession:
+    """
+    Class for each session created.
+    """
+
+    def __init__(self, address):
+        """
+        Constructor
+        :param address: http/https link
+        """
+        self.root_address = address
+        self.driver = self.create_session()
+
+    def create_session(self):
+        """
+        Method to create a session
+        :return: Browser object containing chrome options
+        """
+        # Disable WDM output to console
+        environ['WDM_LOG_LEVEL'] = '0'
+
+        options = Options()
+        options.add_argument("--headless")
+        # log_path=NUL : Send to Windows /dev/null equivalent
+        driver = webdriver.Chrome(executable_path=WDM(log_level=0).install(),
+                                  service_log_path="NUL",
+                                  options=options)
+        driver.get(self.root_address)
+        return driver
+
+    def find_element(self, element_type, element_name, more_flag=False,
+                     timeout=10):
+        """
+        Finds element in page source
+        :param element_type: "id" or "class"
+        :param element_name: Name of id/class element - can be list
+        :param more_flag: Return greater than one value if found
+        :param timeout: Int - Prevent waiting by cancelling after x seconds
+        :return: Dictionary of elements and values (as string or list)
+        """
+        # Only accept type if found in elements_list
+        elements_list = ["id", "class"]
+        element_type = str(element_type).lower()
+        element_type = element_type if element_type in elements_list else "id"
+
+        # Convert element to list
+        element_name = [element_name] if isinstance(element_name, str) else \
+            element_name
+
+        timeout = int(timeout)
+
+        element_dict = {}
+        for element in element_name:
+            if element_type == "id":
+                try:
+                    """
+                    Check whether element exists and wait.
+                    Avoids having to handle for ElementNotFound exception
+                    """
+                    present = selenium_expected.presence_of_element_located(
+                        (By.ID, element))
+                    WebDriverWait(self.driver, timeout).until(present)
+                except TimeoutException:
+                    # Element not found after x seconds
+                    element_dict[element] = None
+
+                # Assuming element is found...
+                try:
+                    # Retrieve all results that have element attribute
+                    if more_flag:
+                        data = self.driver.find_elements_by_id(element)
+                        element_dict[element] = data.text
+                    # Retrieve one result using element attribute
+                    else:
+                        data = self.driver.find_element_by_id(element)
+                        element_dict[element] = data.text
+                except selenium_exceptions.NoSuchElementException:
+                    element_dict[element] = None
+
+            elif element_type == "class":
+                try:
+                    present = selenium_expected.presence_of_element_located(
+                        (By.CLASS_NAME, element))
+                    WebDriverWait(self.driver, timeout).until(present)
+                except TimeoutException:
+                    element_dict[element] = None
+
+                try:
+                    if more_flag:
+                        data = self.driver.find_elements_by_class_name(element)
+                        element_dict[element] = data.text
+                    else:
+                        data = self.driver.find_element_by_class_name(element)
+                        element_dict[element] = data.text
+                except selenium_exceptions.NoSuchElementException:
+                    element_dict[element] = None
+
+            else:
+                element_dict[element] = None
+
+        return element_dict
+
+    def html_source(self):
+        """
+        Retrieve HTML source code
+        :return: HTML source code
+        """
+        return self.driver.page_source
+
+    def tab_title(self):
+        """
+        Retrieve tab title
+        :return: Tab title
+        """
+        return self.driver.title
+
+    def close_session(self):
+        """
+        Close session
+        """
+        self.driver.quit()
 
 
 def close_program():
@@ -44,6 +177,19 @@ def is_process_active(process_name):
                 return True
         # Only reached if non of the names returned True
         return False
+
+
+def verify_page_responds(address):
+    """
+    Check that the page loads
+    :return: Boolean on whether it is online
+    """
+    try:
+        r = requests.get(address, timeout=5)
+    except requests.RequestException:
+        return False
+    else:
+        return r.status_code == 200
 
 
 def rename_file(current_path, new_path):
@@ -175,6 +321,76 @@ def resolve_uplay_info(account, reverse=False):
             else:
                 player_name = json_info["player"]["p_name"]
                 return account, player_name
+
+
+def webscrape_uplay_info(account_id):
+    """
+    Webscrape tabstats, r6tracker and/or r6stats
+    :param account_id: Uplay Account ID
+    :return: (Account ID, Account Name)
+    """
+
+    """ Try webscraping r6tracker """
+
+    webscrape_1 = "R6Tracker"
+    print(f"[*] Webscraping {webscrape_1} for: {account_id}.")
+
+    element_name = "trn-profile-header__name"
+    address = f"https://r6.tracker.network/profile/id/{account_id}"
+    r6tracker_session = ChromeSession(address=address)
+
+    if verify_page_responds(address):
+        r6tracker_data = r6tracker_session.find_element("class", element_name)
+        r6tracker_session.close_session()
+
+        if account_name := r6tracker_data.get(element_name):
+            account_name = str(account_name).split("\n")[0]
+            return account_id, account_name
+
+    print(f"[-] Unable to webscrape {webscrape_1}")
+    time.sleep(0.5)
+
+    """ Try webscraping r6tabs """
+
+    webscrape_2 = "R6Tabs"
+    print(f"[*] Webscraping {webscrape_2} for: {account_id}.")
+
+    element_name = "player-info__player__username"
+    address = f"https://r6stats.com/stats/{account_id}"
+    r6tabs_session = ChromeSession(address=address)
+
+    if verify_page_responds(address):
+        r6tabs_data = r6tabs_session.find_element("class", element_name)
+        r6tabs_session.close_session()
+
+        if account_name := r6tabs_data.get(element_name):
+            return account_id, account_name
+
+    print(f"[-] Unable to webscrape {webscrape_2}")
+    time.sleep(0.5)
+
+    """ Try webscraping tabstats """
+
+    webscrape_3 = "Tabstats"
+    print(f"[*] Webscraping {webscrape_3} for: {account_id}")
+
+    element_name = "playername"
+    address = f"https://tabstats.com/siege/player/{account_id}"
+    tabstats_session = ChromeSession(address=address)
+
+    # If page loads...
+    if verify_page_responds(address):
+        tabstats_data = tabstats_session.find_element("class", element_name)
+        tabstats_session.close_session()
+
+        # KP value retrieved is not None
+        if account_name := tabstats_data.get(element_name):
+            return account_id, account_name
+
+    print(f"[-] Unable to webscrape {webscrape_3}")
+
+    # Unsuccessful web scraping
+    return -1, "Webscrape Error"
 
 
 def separator(line=False, linefeed_pre=False, linefeed_post=False):
@@ -323,17 +539,19 @@ def main():
     for player_id in acc_id_list:
         info = resolve_uplay_info(player_id)
 
-        # Error obtaining account info
+        # Error obtaining account name - API & Webscrape error
         if info[0] == -1:
-            print(f"[-] Unable to retrieve: {player_id}.\t"
-                  f"Reason: {str(info[1])}")
             newline = True
+            print(f"[-] Unable to retrieve API data for: {player_id}.\t"
+                  f"Reason: {str(info[1])}")
+            time.sleep(0.5)
+            info = webscrape_uplay_info(player_id)
         # No error
-        else:
+        if not info[0] == -1:
             acc_resolve_list_sanitised.append(info)
 
     if newline:
-        print()
+        separator(linefeed_post=True)
 
     # Launch menu and capture input
     main_menu_data = main_menu(backup_flag=True,

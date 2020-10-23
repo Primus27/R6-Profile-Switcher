@@ -1,2 +1,5 @@
-psutil
+selenium
 requests
+webdriver_manager
+psutil
+
