@@ -22,7 +22,7 @@ from webdriver_manager.chrome import ChromeDriverManager as WDM
 from os import environ
 import time
 
-program_version = "3.3.0"
+program_version = "3.3.1"
 # In the event that a backup cannot be made, close program
 backup_failsafe = True
 
@@ -50,6 +50,7 @@ class ChromeSession:
 
         options = Options()
         options.add_argument("--headless")
+        options.add_experimental_option('excludeSwitches', ['enable-logging'])
         # log_path=NUL : Send to Windows /dev/null equivalent
         driver = webdriver.Chrome(executable_path=WDM(log_level=0).install(),
                                   service_log_path="NUL",

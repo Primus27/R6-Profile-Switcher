@@ -156,6 +156,9 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
     - Note: This method takes longer than interacting with the API and will only be used if the API is unreachable.
  - Multiple failsafes in place (API -> Site 1 -> Site 2 -> ...)
  - Added additional feedback to user if webscraping is performed
+ 
+### Version 3.3.1 - Bugfix
+ - Suppressed logging message from "DevTools" when webscraping
 
 # Screenshots
 
