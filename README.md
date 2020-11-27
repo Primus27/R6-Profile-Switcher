@@ -184,6 +184,10 @@ Whilst recent program versions check every drive for your accounts, it is still 
  - Selecting menu items no longer requires '0' prefix for single digits
     - I.e. Menu item '01' can be entered as '01' or '1'
 
+### Version 3.5.0 - User Agent
+ - Requests now use popular user agents to prevent them from getting rejected
+    - If name cannot be established, another UA is used to try again
+
 &nbsp;
 
 # Legacy (v2)

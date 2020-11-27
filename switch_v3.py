@@ -127,19 +127,22 @@ def get_all_accounts():
     return profile_paths
 
 
-def get_request(url, ctx, text=False):
+def get_request(url, ctx, text=False, user_agent=None):
     """
     Make a request and return response
     :param url: Request URL
     :param ctx: Error context
     :param text: Return only response text
+    :param user_agent: Request user agent
     :return: Response data (str): text parameter = True, HTML source
             Response data (tuple): error, (-1, error message)
             Response data (dict): API response
     """
+
     # Request
     try:
-        r = requests.get(url)
+        headers = {'User-Agent': user_agent}
+        r = requests.get(url, headers=headers)
         # status_code = r.status_code
         r.raise_for_status()
     except requests.exceptions.HTTPError:  # status_code != 200
@@ -167,10 +170,11 @@ def get_request(url, ctx, text=False):
             return json_info
 
 
-def resolve_uplay_id(uplay_id: str):
+def resolve_uplay_id(uplay_id: str, user_agent=None):
     """
     Utilise all methods to retrieve account information.
     :param uplay_id: Account ID / Name
+    :param user_agent: Request user agent
     :return: If successful, tuple: (account id, account name)
             Otherwise, a tuple: (-1, error message)
     """
@@ -189,7 +193,7 @@ def resolve_uplay_id(uplay_id: str):
 
     # API url
     url = f"https://r6.apitab.com/player/{uplay_id}"
-    response = get_request(url, "API")
+    response = get_request(url, "API", user_agent=user_agent)
 
     # Parse return
     if isinstance(response, tuple):  # Request Error
@@ -225,7 +229,7 @@ def resolve_uplay_id(uplay_id: str):
 
     # Request
     address = f"https://r6.tracker.network/profile/id/{uplay_id}"
-    response = get_request(address, site_1, True)
+    response = get_request(address, site_1, True, user_agent)
 
     # Parse response
     if isinstance(response, tuple):  # Error
@@ -264,7 +268,7 @@ def resolve_uplay_id(uplay_id: str):
     print(f"[*] Accessing {site_2} for: {uplay_id}.")
 
     address = f"https://r6stats.com/stats/{uplay_id}"
-    response = get_request(address, site_2, True)
+    response = get_request(address, site_2, True, user_agent)
 
     if isinstance(response, tuple):
         if response[0] == -1:
@@ -296,7 +300,7 @@ def resolve_uplay_id(uplay_id: str):
     print(f"[*] Accessing {site_3} for: {uplay_id}.")
 
     address = f"https://tabstats.com/siege/player/{uplay_id}"
-    response = get_request(address, site_3, True)
+    response = get_request(address, site_3, True, user_agent)
 
     if isinstance(response, tuple):
         if response[0] == -1:
@@ -464,20 +468,29 @@ def main():
     acc_path_list = get_all_accounts()
     # Contains ID
     acc_id_list = [Path(path).parts[-2] for path in acc_path_list]
+
+    # Prerequisites
     acc_resolve_list_sanitised = []
+    user_agent_list = [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 5.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36"
+    ]
 
     separator(line=True, linefeed_post=True)
 
     for player_id in acc_id_list:
-        info = resolve_uplay_id(player_id)
+        for i, user_agent in enumerate(user_agent_list):
+            print(f"[*] Attempt {i+1} for: {player_id}")
+            info = resolve_uplay_id(player_id, user_agent)
 
-        # Error obtaining account name - API & Webscrape error
-        if isinstance(info, int):
-            if info == -1:
-                print(f"[-] Unable to retrieve name for player: {player_id}")
-        else:
-            acc_resolve_list_sanitised.append(info)
-            print(f"[+] Player name retrieved: {player_id}")
+            # Error obtaining account name - API & Webscrape error
+            if isinstance(info, int):
+                if info == -1:
+                    print(f"[-] Unable to retrieve name for: {player_id}")
+            else:
+                acc_resolve_list_sanitised.append(info)
+                print(f"[+] Player name retrieved: {player_id}")
+                break
 
     if len(acc_id_list) > 0:
         separator(linefeed_pre=True, line=True, linefeed_post=True)
