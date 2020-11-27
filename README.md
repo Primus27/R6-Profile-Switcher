@@ -187,6 +187,9 @@ Whilst recent program versions check every drive for your accounts, it is still 
 ### Version 3.5.0 - User Agent
  - Requests now use popular user agents to prevent them from getting rejected
     - If name cannot be established, another UA is used to try again
+    
+### Version 3.5.1 - Updated program version
+ - Updated application to display the correct version
 
 &nbsp;
 

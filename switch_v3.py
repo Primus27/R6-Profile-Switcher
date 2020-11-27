@@ -15,7 +15,7 @@ import time
 from bs4 import BeautifulSoup
 import re
 
-program_version = "3.4.1"
+program_version = "3.5.1"
 # In the event that a backup cannot be made, close program
 backup_failsafe = True
 
