@@ -14,8 +14,9 @@ from string import ascii_uppercase
 import time
 from bs4 import BeautifulSoup
 import re
+import concurrent.futures
 
-program_version = "3.5.1"
+program_version = "3.6.0"
 # In the event that a backup cannot be made, close program
 backup_failsafe = True
 
@@ -450,6 +451,37 @@ def backup_profile(main_path):
               msg="[+] Profile backup created")
 
 
+def threading_resolve_id(player_id):
+    """
+    Processing for uplay id resolving so that threading can be used
+        alongside multiple user agents
+    :param player_id: Uplay ID
+    :return: Success = tuple: (player id, player name)
+            Fail = int: -1
+    """
+    # User agents to iterate through if unsuccessful
+    user_agent_list = [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 5.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36"
+    ]
+
+    # Iterate through user agents
+    for i, user_agent in enumerate(user_agent_list):
+        print(f"[*] Attempt {i + 1} for: {player_id}")
+        info = resolve_uplay_id(player_id, user_agent)
+
+        # Error obtaining account name - API & site error
+        if isinstance(info, int):
+            if info == -1:
+                print(f"[-] Unable to retrieve name for: {player_id}")
+        # Success
+        else:
+            print(f"[+] Player name retrieved: {player_id}")
+            return info
+    # All UA used and no success
+    return -1
+
+
 def main():
     """
     Main method
@@ -468,29 +500,21 @@ def main():
     acc_path_list = get_all_accounts()
     # Contains ID
     acc_id_list = [Path(path).parts[-2] for path in acc_path_list]
-
-    # Prerequisites
+    # Prerequisite(s)
     acc_resolve_list_sanitised = []
-    user_agent_list = [
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36",
-        "Mozilla/5.0 (Windows NT 5.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36"
-    ]
 
     separator(line=True, linefeed_post=True)
 
-    for player_id in acc_id_list:
-        for i, user_agent in enumerate(user_agent_list):
-            print(f"[*] Attempt {i+1} for: {player_id}")
-            info = resolve_uplay_id(player_id, user_agent)
+    # Threading
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        # Utilise threading on function using id list as param
+        thread_results = executor.map(threading_resolve_id, acc_id_list)
 
-            # Error obtaining account name - API & Webscrape error
-            if isinstance(info, int):
-                if info == -1:
-                    print(f"[-] Unable to retrieve name for: {player_id}")
-            else:
-                acc_resolve_list_sanitised.append(info)
-                print(f"[+] Player name retrieved: {player_id}")
-                break
+        # Remove -1 results, etc.
+        for thread_result in thread_results:
+            # Only tuple means success
+            if isinstance(thread_result, tuple):
+                acc_resolve_list_sanitised.append(thread_result)
 
     if len(acc_id_list) > 0:
         separator(linefeed_pre=True, line=True, linefeed_post=True)

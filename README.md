@@ -191,6 +191,10 @@ Whilst recent program versions check every drive for your accounts, it is still 
 ### Version 3.5.1 - Updated program version
  - Updated application to display the correct version
 
+### Version 3.6.0 - Threading
+ - Retrieving account names is now done through threading.
+    - This leads to a significant performance increase for those with >1 account.
+
 &nbsp;
 
 # Legacy (v2)
