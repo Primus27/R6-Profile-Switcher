@@ -15,7 +15,7 @@ import time
 from bs4 import BeautifulSoup
 import re
 
-program_version = "3.4.0"
+program_version = "3.4.1"
 # In the event that a backup cannot be made, close program
 backup_failsafe = True
 
@@ -371,6 +371,8 @@ def main_menu(backup_flag, account_list):
         print()
 
         choice = input("[?] Option:").strip()
+        if len(choice) == 1:
+            choice = "0" + choice
         separator(line=True, linefeed_post=True)
 
         if choice in available_choices:
