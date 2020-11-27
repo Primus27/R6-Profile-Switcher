@@ -1,5 +1,3 @@
-selenium
 requests
-webdriver_manager
 psutil
-
+beautifulsoup4

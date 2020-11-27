@@ -7,6 +7,7 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
 # Contents
 * [Features](https://github.com/Primus27/R6-Profile-Switcher#features)
     * [Demo](https://github.com/Primus27/R6-Profile-Switcher#demo)
+    * [Screenshots](https://github.com/Primus27/R6-Profile-Switcher#screenshots)
 * [Requirements and Installation](https://github.com/Primus27/R6-Profile-Switcher#requirements-and-installation)
 * [Usage](https://github.com/Primus27/R6-Profile-Switcher#usage)
 * [FAQ](https://github.com/Primus27/R6-Profile-Switcher#faq)
@@ -17,7 +18,6 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
     * [Program hangs at launch](https://github.com/Primus27/R6-Profile-Switcher#issue-3)
     * [Accounts not recognised](https://github.com/Primus27/R6-Profile-Switcher#issue-4)
 * [Changelog](https://github.com/Primus27/R6-Profile-Switcher#changelog)
-* [Screenshots](https://github.com/Primus27/R6-Profile-Switcher#screenshots)
 * [Legacy v2](https://github.com/Primus27/R6-Profile-Switcher#legacy-v2)   
     * [Screenshots](https://github.com/Primus27/R6-Profile-Switcher#screenshots-1)
     * [Requirements and Installation](https://github.com/Primus27/R6-Profile-Switcher#requirements-and-installation-1)
@@ -37,6 +37,19 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
 
 ![](readme_files/demo/demo1.gif)
 > Demo
+
+## Screenshots
+
+![](readme_files/demo/main_menu_screenshot.png)
+> Main menu
+
+![](readme_files/demo/profile_menu_screenshot.png)
+> Profile selection
+
+![](readme_files/demo/profile_summary_screenshot.png)
+> Summary info
+
+&nbsp;
 
 # Requirements and Installation
  1) Download and install [Python 3](https://www.python.org/)
@@ -114,7 +127,8 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
 ### Issue 4
 **Issue:** Program is not recognising my accounts.
 
-**Solution:** The program was set up in a way that users don't have to enter any information, including drive paths. This means if you have your UPlay launcher installed on another drive that isn't C://, Switch V3 will not work. Switch V2 remains unaffected by this.
+**Solution:** The program was set up in a way that users don't have to enter any information, including drive paths. 
+Whilst recent program versions check every drive for your accounts, it is still expected that they follow the format: `{drive}://Program Files (x86)/Ubisoft/Ubisoft Game Launcher/savegames`
 
 # Changelog
 ### Version 1.0.0 - Initial release
@@ -159,17 +173,12 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
  
 ### Version 3.3.1 - Bugfix
  - Suppressed logging message from "DevTools" when webscraping
-
-# Screenshots
-
-![](readme_files/demo/main_menu_screenshot.png)
-> Main menu
-
-![](readme_files/demo/profile_menu_screenshot.png)
-> Profile selection
-
-![](readme_files/demo/profile_summary_screenshot.png)
-> Summary info
+ 
+### Version 3.4.0 - Requests replace webscraping
+ - Account name retrieval no longer uses webscraping but rather requests
+    - Program is now significantly faster to retrieve account names
+ - Code refactored
+ - Updated README.md
 
 &nbsp;
 

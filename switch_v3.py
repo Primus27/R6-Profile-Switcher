@@ -11,144 +11,13 @@ from shutil import copy
 import requests
 import psutil
 from string import ascii_uppercase
-from selenium import webdriver
-import selenium.common.exceptions as selenium_exceptions
-from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as selenium_expected
-from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager as WDM
-from os import environ
 import time
+from bs4 import BeautifulSoup
+import re
 
-program_version = "3.3.1"
+program_version = "3.4.0"
 # In the event that a backup cannot be made, close program
 backup_failsafe = True
-
-
-class ChromeSession:
-    """
-    Class for each session created.
-    """
-
-    def __init__(self, address):
-        """
-        Constructor
-        :param address: http/https link
-        """
-        self.root_address = address
-        self.driver = self.create_session()
-
-    def create_session(self):
-        """
-        Method to create a session
-        :return: Browser object containing chrome options
-        """
-        # Disable WDM output to console
-        environ['WDM_LOG_LEVEL'] = '0'
-
-        options = Options()
-        options.add_argument("--headless")
-        options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        # log_path=NUL : Send to Windows /dev/null equivalent
-        driver = webdriver.Chrome(executable_path=WDM(log_level=0).install(),
-                                  service_log_path="NUL",
-                                  options=options)
-        driver.get(self.root_address)
-        return driver
-
-    def find_element(self, element_type, element_name, more_flag=False,
-                     timeout=10):
-        """
-        Finds element in page source
-        :param element_type: "id" or "class"
-        :param element_name: Name of id/class element - can be list
-        :param more_flag: Return greater than one value if found
-        :param timeout: Int - Prevent waiting by cancelling after x seconds
-        :return: Dictionary of elements and values (as string or list)
-        """
-        # Only accept type if found in elements_list
-        elements_list = ["id", "class"]
-        element_type = str(element_type).lower()
-        element_type = element_type if element_type in elements_list else "id"
-
-        # Convert element to list
-        element_name = [element_name] if isinstance(element_name, str) else \
-            element_name
-
-        timeout = int(timeout)
-
-        element_dict = {}
-        for element in element_name:
-            if element_type == "id":
-                try:
-                    """
-                    Check whether element exists and wait.
-                    Avoids having to handle for ElementNotFound exception
-                    """
-                    present = selenium_expected.presence_of_element_located(
-                        (By.ID, element))
-                    WebDriverWait(self.driver, timeout).until(present)
-                except TimeoutException:
-                    # Element not found after x seconds
-                    element_dict[element] = None
-
-                # Assuming element is found...
-                try:
-                    # Retrieve all results that have element attribute
-                    if more_flag:
-                        data = self.driver.find_elements_by_id(element)
-                        element_dict[element] = data.text
-                    # Retrieve one result using element attribute
-                    else:
-                        data = self.driver.find_element_by_id(element)
-                        element_dict[element] = data.text
-                except selenium_exceptions.NoSuchElementException:
-                    element_dict[element] = None
-
-            elif element_type == "class":
-                try:
-                    present = selenium_expected.presence_of_element_located(
-                        (By.CLASS_NAME, element))
-                    WebDriverWait(self.driver, timeout).until(present)
-                except TimeoutException:
-                    element_dict[element] = None
-
-                try:
-                    if more_flag:
-                        data = self.driver.find_elements_by_class_name(element)
-                        element_dict[element] = data.text
-                    else:
-                        data = self.driver.find_element_by_class_name(element)
-                        element_dict[element] = data.text
-                except selenium_exceptions.NoSuchElementException:
-                    element_dict[element] = None
-
-            else:
-                element_dict[element] = None
-
-        return element_dict
-
-    def html_source(self):
-        """
-        Retrieve HTML source code
-        :return: HTML source code
-        """
-        return self.driver.page_source
-
-    def tab_title(self):
-        """
-        Retrieve tab title
-        :return: Tab title
-        """
-        return self.driver.title
-
-    def close_session(self):
-        """
-        Close session
-        """
-        self.driver.quit()
 
 
 def close_program():
@@ -178,19 +47,6 @@ def is_process_active(process_name):
                 return True
         # Only reached if non of the names returned True
         return False
-
-
-def verify_page_responds(address):
-    """
-    Check that the page loads
-    :return: Boolean on whether it is online
-    """
-    try:
-        r = requests.get(address, timeout=5)
-    except requests.RequestException:
-        return False
-    else:
-        return r.status_code == 200
 
 
 def rename_file(current_path, new_path):
@@ -271,127 +127,197 @@ def get_all_accounts():
     return profile_paths
 
 
-def resolve_uplay_info(account, reverse=False):
+def get_request(url, ctx, text=False):
     """
-    API call to fetch account name based on player ID
-    :param account: Account ID / Name
-    :param reverse: Resolve Name -> ID, instead of ID -> name
-    :return: If successful, tuple with account id and account name
-             Otherwise, a tuple with -1 and an error message
+    Make a request and return response
+    :param url: Request URL
+    :param ctx: Error context
+    :param text: Return only response text
+    :return: Response data (str): text parameter = True, HTML source
+            Response data (tuple): error, (-1, error message)
+            Response data (dict): API response
     """
-    if reverse:
-        url = f"https://r6.apitab.com/search/uplay/{account}"
-    else:
-        url = f"https://r6.apitab.com/player/{account}"
-
+    # Request
     try:
         r = requests.get(url)
-        #status_code = r.status_code
+        # status_code = r.status_code
         r.raise_for_status()
     except requests.exceptions.HTTPError:  # status_code != 200
-        return -1, "API Error!"
+        return -1, f"{ctx} Error"
     except requests.exceptions.ConnectionError:
-        return -1, "Connection Error!"
+        return -1, f"{ctx} Connection Error"
     except requests.exceptions.Timeout:
-        return -1, "Request Timeout!"
+        return -1, f"{ctx} Request Timeout"
     except requests.exceptions.TooManyRedirects:
-        return -1, "Redirect Error! Max redirections reached."
+        return -1, f"{ctx} Redirect Error - Max redirections reached"
     except requests.exceptions.RequestException:
-        return -1, "Undefined Error!"
+        return -1, f"{ctx} Undefined Error"
     else:
+        # Return HTML source of request
+        if text:
+            return r.text
         try:
             # Decode JSON
             json_info = r.json()
         except ValueError:
             # Decoding failed
             # Response is a 204 (No Content) or contains invalid JSON
-            return -1, "API call successful but unable to decode contents."
+            return -1, f"{ctx} request successful but can't decode contents!"
         else:
-            try:
-                response_status = int(json_info["status"])
-                response_message = f"{str(json_info['error'])} " \
-                                   f"{str(json_info['message'])}"
-            except ValueError:
-                return -1, "Request Information Missing!"
-            else:
-                if response_status != 200:
-                    return -1, response_message
-            if reverse:
-                player_id = next(iter(json_info["players"]))
-                return player_id, account
-            else:
-                player_name = json_info["player"]["p_name"]
-                return account, player_name
+            return json_info
 
 
-def webscrape_uplay_info(account_id):
+def resolve_uplay_id(uplay_id: str):
     """
-    Webscrape tabstats, r6tracker and/or r6stats
-    :param account_id: Uplay Account ID
-    :return: (Account ID, Account Name)
+    Utilise all methods to retrieve account information.
+    :param uplay_id: Account ID / Name
+    :return: If successful, tuple: (account id, account name)
+            Otherwise, a tuple: (-1, error message)
+    """
+    # Define local error feedback function
+    def error_feedback(account_id, reason, sleep_duration: int = 0.5):
+        print(f"[-] Unable to retrieve API data for: {account_id}.\t"
+              f"Reason: {reason}!")
+        time.sleep(sleep_duration)
+
+    """
+    Tabstats API
     """
 
-    """ Try webscraping r6tracker """
+    api_1 = "Tabstats API"
+    print(f"[*] Accessing {api_1} for: {uplay_id}.")
 
-    webscrape_1 = "R6Tracker"
-    print(f"[*] Webscraping {webscrape_1} for: {account_id}.")
+    # API url
+    url = f"https://r6.apitab.com/player/{uplay_id}"
+    response = get_request(url, "API")
 
-    element_name = "trn-profile-header__name"
-    address = f"https://r6.tracker.network/profile/id/{account_id}"
-    r6tracker_session = ChromeSession(address=address)
+    # Parse return
+    if isinstance(response, tuple):  # Request Error
+        if response[0] == -1:  # Generic error
+            error_feedback(uplay_id, response[1])
 
-    if verify_page_responds(address):
-        r6tracker_data = r6tracker_session.find_element("class", element_name)
-        r6tracker_session.close_session()
+    elif isinstance(response, dict):  # Response returned
+        try:
+            response_status = int(response["status"])
+            response_message = f"{str(response['error'])} " \
+                               f"{str(response['message'])}"
+        except ValueError:
+            error_feedback(uplay_id, "API Request Information Missing")
+        else:
+            #  Successful response but error message within response
+            if response_status != 200:
+                error_feedback(uplay_id, response_message[:-1])
 
-        if account_name := r6tracker_data.get(element_name):
-            account_name = str(account_name).split("\n")[0]
-            return account_id, account_name
+            # Success
+            else:
+                player_name = response["player"]["p_name"]
+                return uplay_id, player_name
+    else:
+        error_feedback(uplay_id, "API Error")
 
-    print(f"[-] Unable to webscrape {webscrape_1}")
+    """
+    1. R6 Tracker
+    """
+
+    # User feedback
+    site_1 = "R6Tracker"
+    print(f"[*] Accessing {site_1} for: {uplay_id}.")
+
+    # Request
+    address = f"https://r6.tracker.network/profile/id/{uplay_id}"
+    response = get_request(address, site_1, True)
+
+    # Parse response
+    if isinstance(response, tuple):  # Error
+        if response[0] == -1:
+            error_feedback(uplay_id, response[1])
+
+    elif isinstance(response, str):  # Success
+        # Parse HTML
+        soup = BeautifulSoup(response, features="html.parser")
+
+        # Name extraction to be used if title cannot extract name
+        """
+        result = str(soup.find_all("h1", {"class": "trn-profile-header__name"}))
+        account_name = re.findall(r"<span>(.*)<\/span>", result)[0]
+        """
+
+        # Extract title then name
+        result = str(soup.title)
+        account_name = re.findall(
+            r"R6Tracker - (.*) - [\s{2}]Rainbow Six Siege Player Stats",
+            result)
+        account_name = account_name[0] if len(account_name) > 0 else ""
+
+        if account_name:
+            return uplay_id, account_name
+
+    # Error feedback
+    print(f"[-] Unable to access {site_1}")
     time.sleep(0.5)
 
-    """ Try webscraping r6tabs """
+    """
+    2. R6tabs
+    """
 
-    webscrape_2 = "R6Tabs"
-    print(f"[*] Webscraping {webscrape_2} for: {account_id}.")
+    site_2 = "R6Tabs"
+    print(f"[*] Accessing {site_2} for: {uplay_id}.")
 
-    element_name = "player-info__player__username"
-    address = f"https://r6stats.com/stats/{account_id}"
-    r6tabs_session = ChromeSession(address=address)
+    address = f"https://r6stats.com/stats/{uplay_id}"
+    response = get_request(address, site_2, True)
 
-    if verify_page_responds(address):
-        r6tabs_data = r6tabs_session.find_element("class", element_name)
-        r6tabs_session.close_session()
+    if isinstance(response, tuple):
+        if response[0] == -1:
+            error_feedback(uplay_id, response[1])
 
-        if account_name := r6tabs_data.get(element_name):
-            return account_id, account_name
+    elif isinstance(response, str):
+        soup = BeautifulSoup(response, features="html.parser")
 
-    print(f"[-] Unable to webscrape {webscrape_2}")
+        """
+        result = str(soup.find_all("span", {"class": "player-info__player__username"}))
+        account_name = re.findall(r"<span class=\"player-info__player__username\">(.*)<\/span>", result)[0]
+        """
+
+        result = str(soup.title)
+        account_name = re.findall(r"<title>(.*) on PC ::", result)
+        account_name = account_name[0] if len(account_name) > 0 else ""
+
+        if account_name:
+            return uplay_id, account_name
+
+    print(f"[-] Unable to access {site_2}")
     time.sleep(0.5)
 
-    """ Try webscraping tabstats """
+    """
+    3. Tabstats
+    """
 
-    webscrape_3 = "Tabstats"
-    print(f"[*] Webscraping {webscrape_3} for: {account_id}")
+    site_3 = "Tabstats"
+    print(f"[*] Accessing {site_3} for: {uplay_id}.")
 
-    element_name = "playername"
-    address = f"https://tabstats.com/siege/player/{account_id}"
-    tabstats_session = ChromeSession(address=address)
+    address = f"https://tabstats.com/siege/player/{uplay_id}"
+    response = get_request(address, site_3, True)
 
-    # If page loads...
-    if verify_page_responds(address):
-        tabstats_data = tabstats_session.find_element("class", element_name)
-        tabstats_session.close_session()
+    if isinstance(response, tuple):
+        if response[0] == -1:
+            error_feedback(uplay_id, response[1])
 
-        # KP value retrieved is not None
-        if account_name := tabstats_data.get(element_name):
-            return account_id, account_name
+    elif isinstance(response, str):
+        soup = BeautifulSoup(response, features="html.parser")
+        result = str(soup.title)
+        account_name = re.findall(
+            r"<title>(.*) Player Stats on Rainbow Six Siege - R6Tab",
+            result)
+        account_name = account_name[0] if len(account_name) > 0 else ""
 
-    print(f"[-] Unable to webscrape {webscrape_3}")
+        if account_name:
+            return uplay_id, account_name
+
+    print(f"[-] Unable to access {site_3}")
+    time.sleep(0.25)
 
     # Unsuccessful web scraping
-    return -1, "Webscrape Error"
+    return -1
 
 
 def separator(line=False, linefeed_pre=False, linefeed_post=False):
@@ -401,7 +327,7 @@ def separator(line=False, linefeed_pre=False, linefeed_post=False):
     :param linefeed_pre: Bool for a linefeed before the dashed line
     :param linefeed_post: Bool for a linefeed after the dashed line
     """
-    if linefeed_pre:  # Empty print statement does a carriage return
+    if linefeed_pre:
         print()
     if line:
         print("----------------------------------------------")
@@ -532,27 +458,27 @@ def main():
         close_program()
 
     # Get list of accounts and resolve to ID & name pairs, removing any errors
+    # Contains paths
     acc_path_list = get_all_accounts()
+    # Contains ID
     acc_id_list = [Path(path).parts[-2] for path in acc_path_list]
     acc_resolve_list_sanitised = []
-    newline = False
+
+    separator(line=True, linefeed_post=True)
 
     for player_id in acc_id_list:
-        info = resolve_uplay_info(player_id)
+        info = resolve_uplay_id(player_id)
 
         # Error obtaining account name - API & Webscrape error
-        if info[0] == -1:
-            newline = True
-            print(f"[-] Unable to retrieve API data for: {player_id}.\t"
-                  f"Reason: {str(info[1])}")
-            time.sleep(0.5)
-            info = webscrape_uplay_info(player_id)
-        # No error
-        if not info[0] == -1:
+        if isinstance(info, int):
+            if info == -1:
+                print(f"[-] Unable to retrieve name for player: {player_id}")
+        else:
             acc_resolve_list_sanitised.append(info)
+            print(f"[+] Player name retrieved: {player_id}")
 
-    if newline:
-        separator(linefeed_post=True)
+    if len(acc_id_list) > 0:
+        separator(linefeed_pre=True, line=True, linefeed_post=True)
 
     # Launch menu and capture input
     main_menu_data = main_menu(backup_flag=True,
