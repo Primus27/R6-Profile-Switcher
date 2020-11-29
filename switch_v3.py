@@ -16,7 +16,7 @@ from bs4 import BeautifulSoup
 import re
 import concurrent.futures
 
-program_version = "3.6.0"
+program_version = "v3.7.0"
 # In the event that a backup cannot be made, close program
 backup_failsafe = True
 
@@ -171,6 +171,75 @@ def get_request(url, ctx, text=False, user_agent=None):
             return json_info
 
 
+def check_latest_version(url=None):
+    """
+    Check whether the program version is the latest
+    :param url: Custom GH release url (not required)
+    """
+
+    def version_format(version: str):
+        """
+        Convert version number string to tuple
+        :param version: Version number (following X.Y.Z...)
+        :return: tuple containing version numbers for comparison
+        """
+        # Remove "v" if it exists
+        if version.lower().startswith("v"):
+            version = version[1:]
+        return tuple(map(int, (version.split("."))))
+
+    # If no url is provided, default one is used.
+    if not url:
+        url = "https://api.github.com/repos/Primus27/R6-Profile-Switcher/" \
+              "releases/latest"
+        
+    # Request. User agent required for code 200
+    github_api_response = get_request(url, "GitHub API",
+                                      user_agent="https://github.com/Primus27/"
+                                                 "R6-Profile-Switcher")
+    
+    # Valid response
+    if isinstance(github_api_response, dict):
+        try:
+            release_version = str(github_api_response["tag_name"])
+
+        # Valid response but release doesn't exist
+        except KeyError:
+            print(f"[-] Unable to check for latest version.")
+
+        else:
+            # Current version same or higher than release version
+            if version_format(program_version) >= version_format(
+                    release_version):
+                print("[*] You ARE running the latest version!")
+
+            # Current version lower than release version
+            else:
+                print(f"[*] You are NOT running the latest version!\t"
+                      f"Current: {program_version}, Latest: {release_version}")
+
+                # Link if possible
+                regex = r"https:\/\/api\.github\.com\/repos\/(.*)\/" \
+                        r"releases\/latest"
+                gh_account_repo = re.findall(regex, url)
+                account_name = gh_account_repo[0] \
+                    if len(gh_account_repo) > 0 else None
+                if gh_account_repo:
+                    print(f"[*] Link: https://github.com/{account_name}"
+                          f"/releases/latest")
+    
+    # Error response
+    elif isinstance(github_api_response, tuple):
+        print(f"[-] Unable to check for latest version.\t"
+              f"Reason: {github_api_response[1]}!")
+
+    # Unexpected response
+    else:
+        print(f"[-] Unable to check for latest version.")
+
+    separator(linefeed_pre=True, line=True, linefeed_post=True)
+
+
 def resolve_uplay_id(uplay_id: str, user_agent=None):
     """
     Utilise all methods to retrieve account information.
@@ -181,7 +250,7 @@ def resolve_uplay_id(uplay_id: str, user_agent=None):
     """
     # Define local error feedback function
     def error_feedback(account_id, reason, sleep_duration: int = 0.5):
-        print(f"[-] Unable to retrieve API data for: {account_id}.\t"
+        print(f"[-] Unable to retrieve data for: {account_id}.\t"
               f"Reason: {reason}!")
         time.sleep(sleep_duration)
 
@@ -252,7 +321,7 @@ def resolve_uplay_id(uplay_id: str, user_agent=None):
         account_name = re.findall(
             r"R6Tracker - (.*) - [\s{2}]Rainbow Six Siege Player Stats",
             result)
-        account_name = account_name[0] if len(account_name) > 0 else ""
+        account_name = account_name[0] if len(account_name) > 0 else None
 
         if account_name:
             return uplay_id, account_name
@@ -354,7 +423,7 @@ def main_menu(backup_flag, account_list):
     # Current user choice
     choice = None
     # Current options available to user (before adding accounts)
-    available_choices = ["00", "99"]
+    available_choices = ["00", "98", "99"]
     # Feedback for the user
     menu_output = []
 
@@ -371,6 +440,7 @@ def main_menu(backup_flag, account_list):
         print("00. Toggle backup feature")
         if len(menu_output) > 0:
             print(*menu_output, sep="\n")  # Output all account names
+        print("98. Check for updates")
         print("99. Exit")
         print(f"[{file_output_icon}] Backup")
         print()
@@ -378,12 +448,18 @@ def main_menu(backup_flag, account_list):
         choice = input("[?] Option:").strip()
         if len(choice) == 1:
             choice = "0" + choice
-        separator(line=True, linefeed_post=True)
+        separator(linefeed_pre=True, line=True, linefeed_post=True)
 
         if choice in available_choices:
             # Close program
             if choice == "99":
                 exit()
+
+            # Check for latest version, then show menu (recursive)
+            elif choice == "98":
+                check_latest_version()
+                menu_result = main_menu(backup_flag, account_list)
+                return menu_result
 
             # Invert backup flag - recursive
             elif choice == "00":
@@ -486,7 +562,7 @@ def main():
     """
     Main method
     """
-    print(f"R6 Profile Switcher (v{program_version})\n"
+    print(f"R6 Profile Switcher ({program_version})\n"
           " - Developed by Primus27 (github.com/primus27)\n")
 
     # R6 Siege running
