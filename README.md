@@ -70,7 +70,10 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
         
             ![](readme_files/install/3.jpg)
  
- 2) Download `switch_v3.py` and `requirements.txt` (Download the repository as zip and extract)
+ 2) Download R6 Profile Switcher program & dependencies
+    1) Head to the [repository releases tab](https://github.com/Primus27/R6-Profile-Switcher/releases)
+    
+    2) Download the latest `R6_Profile_Switcher_v3.X.X.py` and `requirements.txt` files by clicking on each one and saving them.
  
  3) Install dependencies (found in requirements.txt)
     1) Press `Win`+`S`
@@ -198,6 +201,9 @@ Whilst recent program versions check every drive for your accounts, it is still 
 ### Version 3.7.0 - Check for updates
  - Automatically check whether program version is latest version
  - Added License to repository
+
+### Version 3.7.1 - Updated README.md
+ - Updated README.md
 
 &nbsp;
 
