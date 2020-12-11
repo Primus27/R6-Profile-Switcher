@@ -35,19 +35,28 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
 
 ## Demo
 
-![](readme_files/demo/demo1.gif)
+![](readme_files/demo/main_demo.gif)
 > Demo
 
 ## Screenshots
 
-![](readme_files/demo/main_menu_screenshot.png)
+![](readme_files/demo/main_menu_screenshot.jpg)
 > Main menu
 
-![](readme_files/demo/profile_menu_screenshot.png)
+![](readme_files/demo/profile_menu_screenshot.jpg)
 > Profile selection
 
-![](readme_files/demo/profile_summary_screenshot.png)
+![](readme_files/demo/profile_summary_screenshot.jpg)
 > Summary info
+
+![](readme_files/demo/backup_status_screenshot.jpg)
+> Backup indicator
+
+![](readme_files/demo/update_demo_true.gif)
+> Update check (latest version)
+
+![](readme_files/demo/update_demo_false.gif)
+> Update check (old version)
 
 &nbsp;
 
@@ -204,6 +213,9 @@ Whilst recent program versions check every drive for your accounts, it is still 
 
 ### Version 3.7.1 - Updated README.md
  - Updated README.md
+
+### Version 3.7.2 - Updated README.md & demo files
+ - Updated README.md to reflect new program changes and layout
 
 &nbsp;
 
