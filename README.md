@@ -10,6 +10,7 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
     * [Screenshots](https://github.com/Primus27/R6-Profile-Switcher#screenshots)
 * [Requirements and Installation](https://github.com/Primus27/R6-Profile-Switcher#requirements-and-installation)
 * [Usage](https://github.com/Primus27/R6-Profile-Switcher#usage)
+    * [Arguments](https://github.com/Primus27/R6-Profile-Switcher#arguments)
 * [FAQ](https://github.com/Primus27/R6-Profile-Switcher#faq)
     * [Is this a cheat program?](https://github.com/Primus27/R6-Profile-Switcher#question-1)
 * [Troubleshooting](https://github.com/Primus27/R6-Profile-Switcher#troubleshooting)
@@ -105,6 +106,12 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
 
 # Usage
  - Run 'switch_v3.py' by double clicking on the file
+ 
+## Arguments
+
+| Arg | Value? | Explanation | Required? |
+| ------- | ------- | ------- | ------- |
+| `-d` or `--debug`| No | Enables debug flag. This shows what websites/APIs have been used to acquire player information. | No |
 
 # FAQ
 
@@ -216,6 +223,11 @@ Whilst recent program versions check every drive for your accounts, it is still 
 
 ### Version 3.7.2 - Updated README.md & demo files
  - Updated README.md to reflect new program changes and layout
+
+### Version 3.8.0 - Added arguments
+ - Program automatically hides player information retrieval
+ - Player can temporarily enable information (i.e. debug info) via command-line arguments
+    - E.g. `> python3 switch_v3.py --debug`
 
 &nbsp;
 

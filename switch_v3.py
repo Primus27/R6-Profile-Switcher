@@ -15,10 +15,40 @@ import time
 from bs4 import BeautifulSoup
 import re
 import concurrent.futures
+import argparse
 
 program_version = "v3.7.0"
 # In the event that a backup cannot be made, close program
 backup_failsafe = True
+
+
+def get_args():
+    """
+    Get arguments from user
+    :return: dict containing values defined by user
+    """
+    # Define argument parser
+    parser = argparse.ArgumentParser()
+    # Remove existing action groups
+    parser._action_groups.pop()
+
+    # Create a required and optional group
+    optional = parser.add_argument_group("optional arguments")
+
+    # Define arguments
+    optional.add_argument("-d", "--debug", action="store_true",
+                          dest="debug_flag",
+                          help="Enable debugging")
+    optional.add_argument("--version", action="version",
+                          version=f"%(prog)s {program_version}",
+                          help="Display program version")
+    args = parser.parse_args()
+
+    user_args = {
+        "debug": args.debug_flag
+    }
+
+    return user_args
 
 
 def close_program():
@@ -259,7 +289,8 @@ def resolve_uplay_id(uplay_id: str, user_agent=None):
     """
 
     api_1 = "Tabstats API"
-    print(f"[*] Accessing {api_1} for: {uplay_id}.")
+    if user_arguments.get("debug", False):
+        print(f"[*] Accessing {api_1} for: {uplay_id}.")
 
     # API url
     url = f"https://r6.apitab.com/player/{uplay_id}"
@@ -267,7 +298,7 @@ def resolve_uplay_id(uplay_id: str, user_agent=None):
 
     # Parse return
     if isinstance(response, tuple):  # Request Error
-        if response[0] == -1:  # Generic error
+        if response[0] == -1 and user_arguments.get("debug", False):  # Generic error
             error_feedback(uplay_id, response[1])
 
     elif isinstance(response, dict):  # Response returned
@@ -276,17 +307,19 @@ def resolve_uplay_id(uplay_id: str, user_agent=None):
             response_message = f"{str(response['error'])} " \
                                f"{str(response['message'])}"
         except ValueError:
-            error_feedback(uplay_id, "API Request Information Missing")
+            if user_arguments.get("debug", False):
+                error_feedback(uplay_id, "API Request Information Missing")
         else:
             #  Successful response but error message within response
             if response_status != 200:
-                error_feedback(uplay_id, response_message[:-1])
+                if user_arguments.get("debug", False):
+                    error_feedback(uplay_id, response_message[:-1])
 
             # Success
             else:
                 player_name = response["player"]["p_name"]
                 return uplay_id, player_name
-    else:
+    elif user_arguments.get("debug", False):
         error_feedback(uplay_id, "API Error")
 
     """
@@ -295,7 +328,8 @@ def resolve_uplay_id(uplay_id: str, user_agent=None):
 
     # User feedback
     site_1 = "R6Tracker"
-    print(f"[*] Accessing {site_1} for: {uplay_id}.")
+    if user_arguments.get("debug", False):
+        print(f"[*] Accessing {site_1} for: {uplay_id}.")
 
     # Request
     address = f"https://r6.tracker.network/profile/id/{uplay_id}"
@@ -303,7 +337,7 @@ def resolve_uplay_id(uplay_id: str, user_agent=None):
 
     # Parse response
     if isinstance(response, tuple):  # Error
-        if response[0] == -1:
+        if response[0] == -1 and user_arguments.get("debug", False):
             error_feedback(uplay_id, response[1])
 
     elif isinstance(response, str):  # Success
@@ -327,21 +361,23 @@ def resolve_uplay_id(uplay_id: str, user_agent=None):
             return uplay_id, account_name
 
     # Error feedback
-    print(f"[-] Unable to access {site_1}")
-    time.sleep(0.5)
+    if user_arguments.get("debug", False):
+        print(f"[-] Unable to access {site_1}")
+        time.sleep(0.5)
 
     """
     2. R6tabs
     """
 
     site_2 = "R6Tabs"
-    print(f"[*] Accessing {site_2} for: {uplay_id}.")
+    if user_arguments.get("debug", False):
+        print(f"[*] Accessing {site_2} for: {uplay_id}.")
 
     address = f"https://r6stats.com/stats/{uplay_id}"
     response = get_request(address, site_2, True, user_agent)
 
     if isinstance(response, tuple):
-        if response[0] == -1:
+        if response[0] == -1 and user_arguments.get("debug", False):
             error_feedback(uplay_id, response[1])
 
     elif isinstance(response, str):
@@ -359,21 +395,23 @@ def resolve_uplay_id(uplay_id: str, user_agent=None):
         if account_name:
             return uplay_id, account_name
 
-    print(f"[-] Unable to access {site_2}")
-    time.sleep(0.5)
+    if user_arguments.get("debug", False):
+        print(f"[-] Unable to access {site_2}")
+        time.sleep(0.5)
 
     """
     3. Tabstats
     """
 
     site_3 = "Tabstats"
-    print(f"[*] Accessing {site_3} for: {uplay_id}.")
+    if user_arguments.get("debug", False):
+        print(f"[*] Accessing {site_3} for: {uplay_id}.")
 
     address = f"https://tabstats.com/siege/player/{uplay_id}"
     response = get_request(address, site_3, True, user_agent)
 
     if isinstance(response, tuple):
-        if response[0] == -1:
+        if response[0] == -1 and user_arguments.get("debug", False):
             error_feedback(uplay_id, response[1])
 
     elif isinstance(response, str):
@@ -387,8 +425,9 @@ def resolve_uplay_id(uplay_id: str, user_agent=None):
         if account_name:
             return uplay_id, account_name
 
-    print(f"[-] Unable to access {site_3}")
-    time.sleep(0.25)
+    if user_arguments.get("debug", False):
+        print(f"[-] Unable to access {site_3}")
+        time.sleep(0.25)
 
     # Unsuccessful web scraping
     return -1
@@ -543,16 +582,18 @@ def threading_resolve_id(player_id):
 
     # Iterate through user agents
     for i, user_agent in enumerate(user_agent_list):
-        print(f"[*] Attempt {i + 1} for: {player_id}")
+        if user_arguments.get("debug", False):
+            print(f"[*] Attempt {i + 1} for: {player_id}")
         info = resolve_uplay_id(player_id, user_agent)
 
         # Error obtaining account name - API & site error
         if isinstance(info, int):
-            if info == -1:
+            if info == -1 and user_arguments.get("debug", False):
                 print(f"[-] Unable to retrieve name for: {player_id}")
         # Success
         else:
-            print(f"[+] Player name retrieved: {player_id}")
+            if user_arguments.get("debug", False):
+                print(f"[+] Player name retrieved: {player_id}")
             return info
     # All UA used and no success
     return -1
@@ -579,7 +620,8 @@ def main():
     # Prerequisite(s)
     acc_resolve_list_sanitised = []
 
-    separator(line=True, linefeed_post=True)
+    if user_arguments.get("debug", False):
+        separator(line=True, linefeed_post=True)
 
     # Threading
     with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -592,7 +634,7 @@ def main():
             if isinstance(thread_result, tuple):
                 acc_resolve_list_sanitised.append(thread_result)
 
-    if len(acc_id_list) > 0:
+    if len(acc_id_list) > 0 and user_arguments.get("debug", False):
         separator(linefeed_pre=True, line=True, linefeed_post=True)
 
     # Launch menu and capture input
@@ -689,4 +731,5 @@ def main():
 
 
 if __name__ == '__main__':
+    user_arguments = get_args()
     main()
