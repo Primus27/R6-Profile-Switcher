@@ -17,7 +17,7 @@ import re
 import concurrent.futures
 import argparse
 
-program_version = "v3.8.1"
+program_version = "v3.8.2"
 # In the event that a backup cannot be made, close program
 backup_failsafe = True
 
@@ -529,6 +529,8 @@ def profile_selection_menu():
         print()
 
         choice = input("[?] Option:").strip()
+        if len(choice) == 1:
+            choice = "0" + choice
         separator(line=True, linefeed_post=True)
 
         if choice in available_choices:

@@ -232,6 +232,9 @@ Whilst recent program versions check every drive for your accounts, it is still 
 ### Version 3.8.1 - Updated program version
  - Updated application to display the correct version
 
+### Version 3.8.2 - Menu Input Fix
+ - Players were still unable to enter single digits on profile selection - this has now been fixed
+
 &nbsp;
 
 # Legacy (v2)
