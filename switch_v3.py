@@ -17,7 +17,7 @@ import re
 import concurrent.futures
 import argparse
 
-program_version = "v3.7.0"
+program_version = "v3.8.1"
 # In the event that a backup cannot be made, close program
 backup_failsafe = True
 

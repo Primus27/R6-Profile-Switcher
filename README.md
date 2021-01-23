@@ -229,6 +229,9 @@ Whilst recent program versions check every drive for your accounts, it is still 
  - Player can temporarily enable information (i.e. debug info) via command-line arguments
     - E.g. `> python3 switch_v3.py --debug`
 
+### Version 3.8.1 - Updated program version
+ - Updated application to display the correct version
+
 &nbsp;
 
 # Legacy (v2)
