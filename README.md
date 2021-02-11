@@ -193,6 +193,12 @@ Whilst recent program versions check every drive for your accounts, it is still 
  - Application reworked for use with a GUI
     - It's still somewhat experimental and may have a few bugs
     
+### BETA Version 4.0.1 - Hotfix
+ - Fixed: Application crashes if 'find account' button spammed as a result of too many threads being opened
+    - Limit step 1 action to once every 10 seconds
+    - Add timeout of 5 seconds default for get requests
+    - Added max workers = 10
+    
 # Element Attribution
 
 #### Database icon

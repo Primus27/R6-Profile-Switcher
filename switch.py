@@ -120,13 +120,14 @@ class ProfileFunctions:
         return profile_paths
 
     @staticmethod
-    def get_request(url, ctx, text=False, user_agent=None):
+    def get_request(url, ctx, text=False, user_agent=None, timeout=5):
         """
         Make a request and return response
         :param url: Request URL
         :param ctx: Error context
         :param text: Return only response text
         :param user_agent: Request user agent
+        :param timeout: Seconds until request timeout
         :return: Response data (str): text parameter = True, HTML source
                 Response data (tuple): error, (-1, error message)
                 Response data (dict): API response
@@ -134,7 +135,7 @@ class ProfileFunctions:
         # Request
         try:
             headers = {'User-Agent': user_agent}
-            r = requests.get(url, headers=headers)
+            r = requests.get(url, headers=headers, timeout=timeout)
             # status_code = r.status_code
             r.raise_for_status()
         except requests.exceptions.HTTPError:  # status_code != 200
@@ -185,7 +186,8 @@ class ProfileFunctions:
 
         # Request. User agent required for code 200
         github_api_response = self.get_request(
-            url, "GitHub API", user_agent="https://github.com/Primus27/R6-Profile-Switcher")
+            url, "GitHub API", user_agent="https://github.com/Primus27/R6-Profile-Switcher",
+            timeout=10)
 
         # Valid response
         if isinstance(github_api_response, dict):
@@ -228,7 +230,7 @@ class ProfileFunctions:
 
         # API url
         url = f"https://r6.apitab.com/player/{uplay_id}"
-        response = self.get_request(url, "API", user_agent=user_agent)
+        response = self.get_request(url, "API", user_agent=user_agent, timeout=2)
 
         # Parse return
         if isinstance(response, tuple):  # Request Error
@@ -441,7 +443,7 @@ class ProfileFunctions:
         self.separator(line=True, linefeed_post=True)
 
         # Threading
-        with concurrent.futures.ThreadPoolExecutor() as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
             # Utilise threading on function using id list as param
             thread_results = executor.map(self.threading_resolve_id, acc_path_list)
 

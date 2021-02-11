@@ -11,6 +11,7 @@ import sys
 import argparse
 import webbrowser
 import logging
+import datetime
 import resources
 
 # Defaults
@@ -74,6 +75,7 @@ class MainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
         # Defaults
         self.steps_state = [1, 0, 0, 0]  # 0 = No access, 1 = Access
         self.account_list = []
+        self.step1_activated_time = None
 
         # Link 'Kofi' button
         self.pushButton_donation.clicked.connect(
@@ -102,6 +104,9 @@ class MainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
         Step 1 - Find accounts on system and resolve
         :return: None
         """
+        if not self.time_delta_allowed():
+            return
+
         self.steps_state = [1, 0, 0, 0]
         self.account_list = self.profile_switch_obj.s1_find_account()
 
@@ -274,6 +279,20 @@ class MainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
                 self.label_circle_s4.setPixmap(QtGui.QPixmap(resource_path("step4-orange.png")))
         else:  # No access
             self.label_circle_s4.setPixmap(QtGui.QPixmap(resource_path("step4-red.png")))
+
+    def time_delta_allowed(self, secs_wait: int = 10):
+        """
+        Calculate whether user has performed action within the last X seconds
+        :param secs_wait: Seconds to wait before allowed to perform action
+        :return: Allowed: True
+                Not allowed: False
+        """
+        if self.step1_activated_time is None:
+            self.step1_activated_time = datetime.datetime.now()
+            return True
+        else:
+            return datetime.datetime.now() - self.step1_activated_time > \
+                   datetime.timedelta(seconds=secs_wait)
 
 
 class UpdateWindow(QtWidgets.QMainWindow, ui_update.Ui_UpdateWindow):
