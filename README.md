@@ -199,6 +199,9 @@ Whilst recent program versions check every drive for your accounts, it is still 
     - Add timeout of 5 seconds default for get requests
     - Added max workers = 10
     
+### Version 4.0.2 - Updated program version
+ - Updated application to display the correct version
+    
 # Element Attribution
 
 #### Database icon
