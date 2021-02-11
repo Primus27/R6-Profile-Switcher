@@ -7,26 +7,20 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
 # Contents
 * [Features](https://github.com/Primus27/R6-Profile-Switcher#features)
     * [Demo](https://github.com/Primus27/R6-Profile-Switcher#demo)
-    * [Screenshots](https://github.com/Primus27/R6-Profile-Switcher#screenshots)
-* [Requirements and Installation](https://github.com/Primus27/R6-Profile-Switcher#requirements-and-installation)
 * [Usage](https://github.com/Primus27/R6-Profile-Switcher#usage)
-    * [Arguments](https://github.com/Primus27/R6-Profile-Switcher#arguments)
+    * [Arguments](https://github.com/Primus27/R6-Profile-Switcher#optional-arguments)
+* [Optional - Build the app from source](https://github.com/Primus27/R6-Profile-Switcher#optional---build-the-app-from-source)
 * [FAQ](https://github.com/Primus27/R6-Profile-Switcher#faq)
     * [Is this a cheat program?](https://github.com/Primus27/R6-Profile-Switcher#question-1)
 * [Troubleshooting](https://github.com/Primus27/R6-Profile-Switcher#troubleshooting)
-    * [Program not launching](https://github.com/Primus27/R6-Profile-Switcher#issue-1)
-    * [Program crashes immediately](https://github.com/Primus27/R6-Profile-Switcher#issue-2)
-    * [Program hangs at launch](https://github.com/Primus27/R6-Profile-Switcher#issue-3)
-    * [Accounts not recognised](https://github.com/Primus27/R6-Profile-Switcher#issue-4)
+    * [Accounts not recognised](https://github.com/Primus27/R6-Profile-Switcher#issue-1)
 * [Changelog](https://github.com/Primus27/R6-Profile-Switcher#changelog)
-* [Legacy v2](https://github.com/Primus27/R6-Profile-Switcher#legacy-v2)   
-    * [Screenshots](https://github.com/Primus27/R6-Profile-Switcher#screenshots-1)
-    * [Requirements and Installation](https://github.com/Primus27/R6-Profile-Switcher#requirements-and-installation-1)
-    * [Getting your Siege ID](https://github.com/Primus27/R6-Profile-Switcher#multiple-siege-accounts)
+* [Element Attribution](https://github.com/Primus27/R6-Profile-Switcher#element-attribution)
 
 &nbsp;
 
 # Features
+ - Portable app (no installation required)
  - Easily switch between profiles by navigating the intuitive menus.
  - Automatically retrieves account names on your PC so you don't have to do any work figuring out which account ID is the right one.
  - On the fly profile backup w/ timestamps
@@ -36,82 +30,63 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
 
 ## Demo
 
-![](readme_files/demo/main_demo.gif)
-> Demo
-
-## Screenshots
-
-![](readme_files/demo/main_menu_screenshot.jpg)
-> Main menu
-
-![](readme_files/demo/profile_menu_screenshot.jpg)
-> Profile selection
-
-![](readme_files/demo/profile_summary_screenshot.jpg)
-> Summary info
-
-![](readme_files/demo/backup_status_screenshot.jpg)
-> Backup indicator
-
-![](readme_files/demo/update_demo_true.gif)
-> Update check (latest version)
-
-![](readme_files/demo/update_demo_false.gif)
-> Update check (old version)
+![](readme_files/demo/demo.gif)
 
 &nbsp;
 
-# Requirements and Installation
+# Usage
+ 1) Download the latest version of profile switcher from [here](https://github.com/Primus27/R6-Profile-Switcher/releases).
+ 
+ 2) Disable cloud backup in Uplay: Uplay launcher -> settings -> general -> disable "Enable cloud save synchronisation for supported games". 
+	- This is so that it doesn't keep restoring the profile stored in the cloud.
+	![](readme_files/setup/1.jpg)
+	
+ 3) Run EXE by double clicking on the file.
+ 
+## Optional Arguments
+
+- If you don't know what this means, don't worry; You don't _need_ to do this.
+
+| Arg | Value? | Explanation |
+| ------- | ------- | ------- |
+| `-d` or `--debug`| No | Enables debug flag. This shows what websites/APIs have been used to acquire player information. |
+
+
+# Optional - Build the app from source
+
+If you don't want to use the released EXE, you can build the application yourself.
+
  1) Download and install [Python 3](https://www.python.org/)
-    1) Navigate to [Python 3](https://www.python.org/downloads/windows/) install page
-    2) Click on '_Latest Python 3 Release - Python 3.X.X_' near top of page
+    1) Navigate to [Python 3](https://www.python.org/downloads/windows/) install page.
+    2) Click on '_Latest Python 3 Release - Python 3.X.X_' near top of page.
     3) Scroll down to '_Files_' and download either:
         1) '_Windows x86-64 embedded zip file_' or
         2) '_Windows x86-64 executable installer_'
-        
-        ![](readme_files/install/1.jpg)
-    4) Install Python 3
+    4) Install Python 3.
         1) Make sure that:
             - '_Install launcher for all users_' = **checked**
             - '_Add Python 3.8 to PATH_' = **checked**
-            
-            ![](readme_files/install/2.jpg)
-        2) Click on '_Disable path length limit_' (requires admin privileges)
-        
-            ![](readme_files/install/3.jpg)
+        2) Click on '_Disable path length limit_' (requires admin privileges).
  
- 2) Download R6 Profile Switcher program & dependencies
-    1) Head to the [repository releases tab](https://github.com/Primus27/R6-Profile-Switcher/releases)
-    
-    2) Download the latest `R6_Profile_Switcher_v3.X.X.py` and `requirements.txt` files by clicking on each one and saving them.
+ 2) Download the [source code](https://github.com/Primus27/R6-Profile-Switcher/archive/master.zip).
  
  3) Install dependencies (found in requirements.txt)
-    1) Press `Win`+`S`
+    1) Press `Win`+`S`.
     
-    2) Type `file explorer`
+    2) Type `file explorer`.
     
-    3) Using the file exporer, navigate to your (downloads) directory where `requirements.txt` is
+    3) Using the file exporer, navigate to your (downloads?) directory where `requirements.txt` is.
     
-    4) In the file exporer address bar type `cmd` and press `ENTER`
-    ![](readme_files/install/4.gif)
+    4) In the file exporer address bar type `cmd` and press `ENTER`.
+    ![](readme_files/make/1.gif)
     
     &nbsp;
     
-    5) Using command prompt (cmd) type `pip3 install -r requirements.txt`. If that doesn't work, type `py -3 -m pip install -r requirements.txt`
-    ![](readme_files/install/5.gif)
+    5) Using command prompt (cmd), type `pip3 install -r requirements.txt`. If that doesn't work, type `py -3 -m pip install -r requirements.txt`
     
- 4) Disable cloud backup in Uplay: Uplay launcher -> settings -> general -> disable "Enable cloud save synchronisation for supported games". 
-	- This is so that it doesn't keep restoring the profile stored in the cloud.
-	![](readme_files/install/6.jpg)
-
-# Usage
- - Run 'switch_v3.py' by double clicking on the file
+ 4) Using the command prompt, type `pyinstaller --onefile --windowed --name "R6 Profile Switcher" --icon="{current directory}\src\dist\r6-logo.ico" app.py`, where {current directory} is the extracted R6 Profile Switcher folder.
  
-## Arguments
-
-| Arg | Value? | Explanation | Required? |
-| ------- | ------- | ------- | ------- |
-| `-d` or `--debug`| No | Enables debug flag. This shows what websites/APIs have been used to acquire player information. | No |
+ 5) Program located in 'dist' folder
 
 # FAQ
 
@@ -123,27 +98,6 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
 # Troubleshooting
 
 ### Issue 1
-**Issue:** Double clicking on the program opens a text editor or other program.
-
-**Solution:** File associations are set up wrong. Right click on the python file and select `open with`. Choose `python` from the list or click `more apps 🠫` and select `python`.
-
-&nbsp;
-
-### Issue 2
-**Issue:** Program does not launch / immediately crashes.
-
-**Solution:** This happens because Python was not added to your (environment variables) PATH (See installation). You can verify this by opening command prompt where the program is located and typing `python switch_v3.py`. Receiving an error such as `this system cannot run the specified program` or `'python' is not recognized as an internal or external command` means that you need to add python to your PATH. [This video shows you how to do it.](https://www.youtube.com/watch?v=Y2q_b4ugPWk)
-
-&nbsp;
-
-### Issue 3
-**Issue:** Program launches and displays title (program name and developer...) but does not load menu options immediately.
-
-**Solution:** This happens because an API call is made to R6tabs to check what accounts are on your system. Unfortunately, there is nothing you can do here as it typically takes 1-2 seconds to receive a response.
-
-&nbsp;
-
-### Issue 4
 **Issue:** Program is not recognising my accounts.
 
 **Solution:** The program was set up in a way that users don't have to enter any information, including drive paths. 
@@ -235,45 +189,23 @@ Whilst recent program versions check every drive for your accounts, it is still 
 ### Version 3.8.2 - Menu Input Fix
  - Players were still unable to enter single digits on profile selection - this has now been fixed
 
-&nbsp;
-
-# Legacy (v2)
-
-NOTE: switch_v2.py is legacy software and should only be used if you encounter issues with v3.
-The newer version is however backwards compatible with the old version and vice versa.
-This means your profiles will still work regardless of which version are using.
-
-### Screenshots
-
-![](readme_files/legacy/demo1.gif)
-> Application demo
-
-### Requirements and Installation
- 1) Download and install [Python 3](https://www.python.org/)
- 2) Download `switch_v2.py` (Download the repository as zip and extract)
- 3) Disable cloud backup in Uplay: Uplay launcher -> settings -> disable "Enable cloud save synchronisation for supported games". 
-	- This is so that it doesn't keep restoring the profile stored in the cloud.
- 4) Navigate to your R6 profile directory:
-    - C:\Program Files (x86)\Ubisoft\Ubisoft Game Launcher\savegames\\{profile}\635
- 5) Copy this path to `switch.py` at ~line 21
-    - This also can be found under `# Define profile path` ~line 20
-    - You can do do this by right clicking on the `.py` file and selecting `open with notepad` or `open with notepad++`
+### BETA Version 4.0.0 - Program rework (GUI)
+ - Application reworked for use with a GUI
+    - It's still somewhat experimental and may have a few bugs
     
-    ![](readme_files/legacy/demo2.gif)
-    
- 6) If you do not want to make backups, set the backup flag to 'False' at ~line 17 
-    - This also can be found under `# Enable backup of current profile before switching profile` ~line 16
-    - You can do do this by right clicking on the `.py` file and selecting `open with notepad` or `open with notepad++`
-    
-    ![](readme_files/legacy/demo3.gif)
+# Element Attribution
 
-### Multiple Siege Accounts
+#### Database icon
+  - Icons made by [Freepik](https://www.freepik.com) from [Flaticon](https://www.flaticon.com/)
 
-#### Method 1
-If you have multiple accounts and aren't sure about which account is the right one, open up: **"C:\Users\\{name}\Documents\My Games\Rainbow Six - Siege\\{any profile}\GameSettings.ini"** and change **AimDownSightsMouse** ~line 109 to any number. Load up the game and see whether that account's ADS was affected. Keep trying until you find the right account.
+#### Ubisoft icon
+  - Icons made by [Freepik](https://www.freepik.com) from [Flaticon](https://www.flaticon.com/)
 
-#### Method 2
-Visit [R6Tab](https://tabstats.com/siege) and enter your playername.
-Afterwards, check the URL and your account ID will be seen at this part of the URL:
-https://tabstats.com/siege/player/{name}/{**account_ID**}
+#### User icon
+  - Icons made by [Freepik](https://www.freepik.com) from [Flaticon](https://www.flaticon.com/)
 
+#### Switch icon
+  - Icons made by [Pixel Perfect](https://www.flaticon.com/authors/pixel-perfect) from [Flaticon](https://www.flaticon.com/)
+
+#### R6 Logo
+  - Rainbow Six Siege icon by [Icons8](https://icons8.com)

@@ -30,8 +30,11 @@ $RECYCLE.BIN/
 *.lnk
 
 # Project files
-test.py
-test2.py
 geckodriver.log
 debug.log
 CHANGELOG.md
+app_files/
+dist/
+src/icon/
+tmp/
+resource.qrc
