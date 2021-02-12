@@ -35,6 +35,8 @@ debug.log
 CHANGELOG.md
 app_files/
 dist/
-src/icon/
+src/*
+!src/dist/
 tmp/
 resource.qrc
+*.spec

@@ -43,14 +43,17 @@ No more swapping files whenever you want to scrim, the R6 Profile Switcher does 
 	
  3) Run EXE by double clicking on the file.
  
+&nbsp;
+ 
 ## Optional Arguments
 
-- If you don't know what this means, don't worry; You don't _need_ to do this.
+- If you don't know what this means, don't worry; you don't _need_ to do this.
 
 | Arg | Value? | Explanation |
 | ------- | ------- | ------- |
 | `-d` or `--debug`| No | Enables debug flag. This shows what websites/APIs have been used to acquire player information. |
 
+&nbsp;
 
 # Optional - Build the app from source
 
@@ -88,12 +91,16 @@ If you don't want to use the released EXE, you can build the application yoursel
  
  5) Program located in 'dist' folder
 
+&nbsp;
+
 # FAQ
 
 ### Question 1
 **Question:** Does this swap your skins by swapping out your save file? Because that's technically bannable isn't it? Or only if its for skins you don't have?
 
 **Answer:** This program is not a cheat program and does not hook into the game. It swaps the save file (1.save) with one that belongs to you (and only you). <ins>This way it doesn't swap skins with anything you don't have</ins>. Bear in mind, "1.save" only handles skins and attachments and considering that this script uses "copies" of your profiles, it will never equip something that you have never equipped yourself.
+
+&nbsp;
 
 # Troubleshooting
 
@@ -102,6 +109,8 @@ If you don't want to use the released EXE, you can build the application yoursel
 
 **Solution:** The program was set up in a way that users don't have to enter any information, including drive paths. 
 Whilst recent program versions check every drive for your accounts, it is still expected that they follow the format: `{drive}://Program Files (x86)/Ubisoft/Ubisoft Game Launcher/savegames`
+
+&nbsp;
 
 # Changelog
 ### Version 1.0.0 - Initial release
@@ -195,12 +204,17 @@ Whilst recent program versions check every drive for your accounts, it is still 
     
 ### BETA Version 4.0.1 - Hotfix
  - Fixed: Application crashes if 'find account' button spammed as a result of too many threads being opened
-    - Limit step 1 action to once every 10 seconds
-    - Add timeout of 5 seconds default for get requests
-    - Added max workers = 10
+    - Limit 'step 1' action to once every 10 seconds (you shouldn't need to do this more than once per launch)
+    - Add default timeout of 5 seconds for http requests
+    - Added max of 10 workers for threading
     
-### Version 4.0.2 - Updated program version
+### BETA Version 4.0.2 - Updated program version
  - Updated application to display the correct version
+ 
+### BETA Version 4.0.3 - Added ico file
+ - Removed /src/dist/ from exclusions, allowing those who build from source to add the icon
+
+&nbsp;
     
 # Element Attribution
 
