@@ -3,3 +3,4 @@ psutil
 beautifulsoup4
 PyQt5
 PyInstaller
+pyqt5-tools

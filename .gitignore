@@ -35,8 +35,6 @@ debug.log
 CHANGELOG.md
 app_files/
 dist/
-src/*
-!src/dist/
+build/
 tmp/
-resource.qrc
 *.spec

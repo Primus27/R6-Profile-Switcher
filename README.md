@@ -78,18 +78,20 @@ If you don't want to use the released EXE, you can build the application yoursel
     
     2) Type `file explorer`.
     
-    3) Using the file exporer, navigate to your (downloads?) directory where `requirements.txt` is.
+    3) Using the file explorer, navigate to your (downloads?) directory where `requirements.txt` is.
     
-    4) In the file exporer address bar type `cmd` and press `ENTER`.
+    4) In the file explorer address bar type `cmd` and press `ENTER`.
     ![](readme_files/make/1.gif)
     
     &nbsp;
     
     5) Using command prompt (cmd), type `pip3 install -r requirements.txt`. If that doesn't work, type `py -3 -m pip install -r requirements.txt`
-    
- 4) Using the command prompt, type `pyinstaller --onefile --windowed --name "R6 Profile Switcher" --icon="{current directory}\src\dist\r6-logo.ico" app.py`, where {current directory} is the extracted R6 Profile Switcher folder.
  
- 5) Program located in 'dist' folder
+ 4) Using the command prompt, type `pyrcc5 resources.qrc -o resources.py`
+ 
+ 5) Using the command prompt, type `pyinstaller --onefile --windowed --name "R6 Profile Switcher" --icon="{current directory}\src\dist\r6-logo.ico" app.py`, where {current directory} is the extracted R6 Profile Switcher folder.
+ 
+ 6) Program located in 'dist' folder
 
 &nbsp;
 
@@ -213,6 +215,10 @@ Whilst recent program versions check every drive for your accounts, it is still 
  
 ### BETA Version 4.0.3 - Added ico file
  - Removed /src/dist/ from exclusions, allowing those who build from source to add the icon
+ 
+### BETA Version 4.1.0 - Added Dark Theme and Light Theme
+ - Default is set to 'dark'. You can use the light theme under the 'View' tab
+ - App no longer looks like it's from the Windows XP era
 
 &nbsp;
     
@@ -232,3 +238,11 @@ Whilst recent program versions check every drive for your accounts, it is still 
 
 #### R6 Logo
   - Rainbow Six Siege icon by [Icons8](https://icons8.com)
+
+#### Application style
+
+##### Dark Mode
+ - [Aqua style sheet](https://github.com/GTRONICK/QSS) by [Qtronic](khttps://github.com/GTRONICK)
+
+##### Light Mode
+ - [Combinear](https://qss-stock.devsecstudio.com/templates.php)

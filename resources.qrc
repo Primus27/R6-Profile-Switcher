@@ -1,0 +1,31 @@
+<RCC>
+  <qresource>
+    <file>src/icon/r6-logo.png</file>
+    <file>src/icon/step1-green.png</file>
+    <file>src/icon/step1-orange.png</file>
+    <file>src/icon/step1-red.png</file>
+    <file>src/icon/step2-green.png</file>
+    <file>src/icon/step2-orange.png</file>
+    <file>src/icon/step2-red.png</file>
+    <file>src/icon/step3-green.png</file>
+    <file>src/icon/step3-orange.png</file>
+    <file>src/icon/step3-red.png</file>
+    <file>src/icon/step4-green.png</file>
+    <file>src/icon/step4-orange.png</file>
+    <file>src/icon/step4-red.png</file>
+	<file>src/icon/database_light.png</file>
+    <file>src/icon/kofi_light.png</file>
+    <file>src/icon/switch_light.png</file>
+    <file>src/icon/ubisoft_light.png</file>
+    <file>src/icon/user_light.png</file>
+	<file>src/icon/database_dark.png</file>
+    <file>src/icon/kofi_dark.png</file>
+	<file>src/icon/switch_dark.png</file>
+    <file>src/icon/ubisoft_dark.png</file>
+    <file>src/icon/user_dark.png</file>
+  </qresource>
+  <qresource>
+	<file>src/style/Light.qss</file>
+	<file>src/style/Dark.qss</file>
+  </qresource>
+</RCC>

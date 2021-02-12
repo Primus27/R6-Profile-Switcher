@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 import re
 import concurrent.futures
 
-program_version = "BETA v4.0.3"
+program_version = "BETA v4.1.0"
 
 
 class ProfileFunctions:

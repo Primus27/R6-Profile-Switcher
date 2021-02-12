@@ -29,6 +29,9 @@ class MainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
+        # Set theme
+        self.set_dark_theme()
+
         # Set defaults
         self.args = gl_args
         self.setWindowTitle("R6 Profile Switcher")
@@ -43,17 +46,6 @@ class MainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
         self.label_circle_s2.setPixmap(QtGui.QPixmap(resource_path("step2-red.png")))
         self.label_circle_s3.setPixmap(QtGui.QPixmap(resource_path("step3-red.png")))
         self.label_circle_s4.setPixmap(QtGui.QPixmap(resource_path("step4-red.png")))
-        self.label_img_s1.setPixmap(QtGui.QPixmap(resource_path("database.png")))
-        self.label_img_s4.setPixmap(QtGui.QPixmap(resource_path("switch.png")))
-        self.label_img_s2.setPixmap(QtGui.QPixmap(resource_path("ubisoft.png")))
-        self.label_img_s3.setPixmap(QtGui.QPixmap(resource_path("user.png")))
-
-        # Add image for donation button
-        icon = QtGui.QIcon()
-        icon.addPixmap(
-            QtGui.QPixmap(resource_path("kofi.png")),
-            QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.pushButton_donation.setIcon(icon)
 
         # Log
         logging.basicConfig(format='%(message)s')
@@ -63,7 +55,7 @@ class MainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
             logging.getLogger().setLevel(logging.INFO)
 
         # Create text box for log
-        textbox_log = QPlainTextEditLogger(self.plainTextEdit_log, (550, 300))
+        textbox_log = QPlainTextEditLogger(self.plainTextEdit_log, (550, 307))
         # Log format
         #textbox_log.setFormatter(logging.Formatter("%(asctime)s :: %(message)s", "%H:%M:%S"))
         textbox_log.setFormatter(logging.Formatter("%(message)s"))
@@ -98,6 +90,36 @@ class MainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
         # Update window
         self.action_check_for_updates.triggered.connect(lambda: self.update_dialog.show())
         self.update_dialog = UpdateWindow(self)
+
+        # Update window
+        self.action_dark_theme.triggered.connect(lambda: self.set_dark_theme(
+            self.action_dark_theme.isChecked()))
+
+    def set_dark_theme(self, dark=True):
+        """
+        Sets the window theme.
+        :param dark: Dark mode
+        """
+        if dark:
+            theme = "Dark"
+        else:
+            theme = "Light"
+
+        # Open resource file for stylesheet
+        sty_f = QtCore.QFile(resource_path(f"{theme}.qss", "style"))
+        sty_f.open(QtCore.QIODevice.ReadOnly)
+        self.setStyleSheet(((sty_f.readAll()).data()).decode("latin1"))
+
+        self.label_img_s1.setPixmap(QtGui.QPixmap(resource_path(f"database_{theme.lower()}.png")))
+        self.label_img_s4.setPixmap(QtGui.QPixmap(resource_path(f"switch_{theme.lower()}.png")))
+        self.label_img_s2.setPixmap(QtGui.QPixmap(resource_path(f"ubisoft_{theme.lower()}.png")))
+        self.label_img_s3.setPixmap(QtGui.QPixmap(resource_path(f"user_{theme.lower()}.png")))
+
+        icon = QtGui.QIcon()
+        icon.addPixmap(
+            QtGui.QPixmap(resource_path(f"kofi_{theme.lower()}.png")),
+            QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pushButton_donation.setIcon(icon)
 
     def find_account_action(self):
         """
@@ -314,7 +336,7 @@ class UpdateWindow(QtWidgets.QMainWindow, ui_update.Ui_UpdateWindow):
         self.setWindowIcon(QtGui.QIcon(resource_path("r6-logo.png")))
 
         # Download latest version button
-        self.pushButton_link.setText("Download latest version")
+        self.pushButton_link.setText("Latest version")
         self.pushButton_link.clicked.connect(lambda: webbrowser.open(
             "https://github.com/Primus27/R6-Profile-Switcher/releases"))
 
