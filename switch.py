@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 import re
 import concurrent.futures
 
-program_version = "BETA v4.1.0"
+program_version = "BETA v4.1.1"
 
 
 class ProfileFunctions:
@@ -107,15 +107,23 @@ class ProfileFunctions:
         # Get all accounts
         accounts_paths = []
         for drive in drive_savegames_path:
-            accounts_list = [folder for folder in drive.glob("*") if folder.is_dir()]
+            accounts_list = [folder for folder in drive.iterdir() if folder.is_dir()]
             accounts_paths.extend(accounts_list)
 
-        # Append 635 / 1843 depending on whether the folders exist
-        uplay_profile_paths = [path / "635" for path in accounts_paths if (path / "635").is_dir()]
-        steam_profile_paths = [path / "1843" for path in accounts_paths if (path / "1843").is_dir()]
+        # List of Uplay App ID's relating to R6S (in priority order)
+        # https://github.com/wTonyChen/Uplay-AppID-List
+        r6_app_id_list = ["635", "1843", "1844", "1842", "1839", "1864", "1867", "1000", "1011",
+                          "1012", "1013", "1141", "1142", "1143", "1728", "1873", "1874"]
 
-        profile_paths = uplay_profile_paths.copy()
-        profile_paths.extend(steam_profile_paths)
+        # Get all profiles
+        profile_paths = []
+        for account_path in accounts_paths:  # /accounts_path/
+            for r6_app_id in r6_app_id_list:
+                tmp_path = account_path / r6_app_id
+                if tmp_path.is_dir():
+                    profile_paths.append(tmp_path)
+                    # Stop checking that account once profile dir found
+                    break
 
         return profile_paths
 

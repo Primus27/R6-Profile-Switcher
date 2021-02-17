@@ -115,39 +115,74 @@ Whilst recent program versions check every drive for your accounts, it is still 
 &nbsp;
 
 # Changelog
-### Version 1.0.0 - Initial release
- - Internal (not available)
- 
-### Version 2.0.0 - Github release
- - Easily switch from your main profile (containing all skins and attachments) to your competitive profile (containing legal skins).
- - Automatically create backups of profile w/ timestamps
- 
-### Version 3.0.0 - Program rework (menus, player name resolver...)
- - Added menu
- - Added on the fly backup enable / disable
- - Added player ID to player name resolver - no more copy/pasting paths
- - Added 'active profile' feedback before profile selection
- 
-### Version 3.0.1 - Troubleshooting FAQ
- - Added troubleshooting FAQ for those having issues
- 
-### Version 3.0.2 - Updated troubleshooting / FAQ
- - Updated troubleshooting FAQ for those having issues
- 
-### Version 3.1.0 - Siege process checker
- - Added an event to check whether R6 Siege (process) is running during script execution. Script will exit if Siege is running to prevent any issues with profiles not switching correctly.
 
-### Version 3.1.1 - API error feedback
- - Correct handling of R6Tabs API error, even when they return a code 200 with missing information
- - User now informed if profiles could not be resolved
+### BETA Version 4.1.1 - Improved account search compatibility
+ - Some people had their 1.save under a different directory. This update improves compatibility for those with different Siege App IDs.
+
+### BETA Version 4.1.0 - Added Dark Theme and Light Theme
+ - Default is set to 'dark'. You can use the light theme under the 'View' tab
+ - App no longer looks like it's from the Windows XP era
  
-### Version 3.2.0 - Steam & multi-drive support
- - Updated README.md w/ contents page, etc.
- - Now supports profiles when uplay is stored on <u>other</u> drives (A-Z)
- - Now supports profiles when Siege is launched through Steam
+### BETA Version 4.0.3 - Added ico file
+ - Removed /src/dist/ from exclusions, allowing those who build from source to add the icon
+
+### BETA Version 4.0.2 - Updated program version
+ - Updated application to display the correct version
  
-### Version 3.2.1 - Updated README.md
+### BETA Version 4.0.1 - Hotfix
+ - Fixed: Application crashes if 'find account' button spammed as a result of too many threads being opened
+    - Limit 'step 1' action to once every 10 seconds (you shouldn't need to do this more than once per launch)
+    - Add default timeout of 5 seconds for http requests
+    - Added max of 10 workers for threading 
+
+### BETA Version 4.0.0 - Program rework (GUI)
+ - Application reworked for use with a GUI
+    - It's still somewhat experimental and may have a few bugs
+    
+### Version 3.8.2 - Menu Input Fix
+ - Players were still unable to enter single digits on profile selection - this has now been fixed
+ 
+### Version 3.8.1 - Updated program version
+ - Updated application to display the correct version
+ 
+### Version 3.8.0 - Added arguments
+ - Program automatically hides player information retrieval
+ - Player can temporarily enable information (i.e. debug info) via command-line arguments
+    - E.g. `> python3 switch_v3.py --debug`
+    
+### Version 3.7.2 - Updated README.md & demo files
+ - Updated README.md to reflect new program changes and layout
+ 
+### Version 3.7.1 - Updated README.md
+ - Updated README.md 
+ 
+### Version 3.7.0 - Check for updates
+ - Automatically check whether program version is latest version
+ - Added License to repository 
+ 
+### Version 3.6.0 - Threading support
+ - Retrieving account names is now done through threading.
+    - This leads to a significant performance increase for those with >1 account. 
+ 
+### Version 3.5.1 - Updated program version
+ - Updated application to display the correct version
+ 
+### Version 3.5.0 - User Agent
+ - Requests now use popular user agents to prevent them from getting rejected
+    - If name cannot be established, another UA is used to try again 
+ 
+### Version 3.4.1 - Menu Input Fix
+ - Selecting menu items no longer requires '0' prefix for single digits
+    - I.e. Menu item '01' can be entered as '01' or '1' 
+ 
+### Version 3.4.0 - Requests replace webscraping
+ - Account name retrieval no longer uses webscraping but rather requests
+    - Program is now significantly faster to retrieve account names
+ - Code refactored
  - Updated README.md
+ 
+### Version 3.3.1 - Bugfix
+ - Suppressed logging message from "DevTools" when webscraping 
  
 ### Version 3.3.0 - Webscraping
  - Webscrape R6 sites for username resolving.
@@ -155,70 +190,39 @@ Whilst recent program versions check every drive for your accounts, it is still 
  - Multiple failsafes in place (API -> Site 1 -> Site 2 -> ...)
  - Added additional feedback to user if webscraping is performed
  
-### Version 3.3.1 - Bugfix
- - Suppressed logging message from "DevTools" when webscraping
+### Version 3.2.1 - Updated README.md
+ - Updated README.md 
  
-### Version 3.4.0 - Requests replace webscraping
- - Account name retrieval no longer uses webscraping but rather requests
-    - Program is now significantly faster to retrieve account names
- - Code refactored
- - Updated README.md
-
-### Version 3.4.1 - Menu Input Fix
- - Selecting menu items no longer requires '0' prefix for single digits
-    - I.e. Menu item '01' can be entered as '01' or '1'
-
-### Version 3.5.0 - User Agent
- - Requests now use popular user agents to prevent them from getting rejected
-    - If name cannot be established, another UA is used to try again
-    
-### Version 3.5.1 - Updated program version
- - Updated application to display the correct version
-
-### Version 3.6.0 - Threading support
- - Retrieving account names is now done through threading.
-    - This leads to a significant performance increase for those with >1 account.
-    
-### Version 3.7.0 - Check for updates
- - Automatically check whether program version is latest version
- - Added License to repository
-
-### Version 3.7.1 - Updated README.md
- - Updated README.md
-
-### Version 3.7.2 - Updated README.md & demo files
- - Updated README.md to reflect new program changes and layout
-
-### Version 3.8.0 - Added arguments
- - Program automatically hides player information retrieval
- - Player can temporarily enable information (i.e. debug info) via command-line arguments
-    - E.g. `> python3 switch_v3.py --debug`
-
-### Version 3.8.1 - Updated program version
- - Updated application to display the correct version
-
-### Version 3.8.2 - Menu Input Fix
- - Players were still unable to enter single digits on profile selection - this has now been fixed
-
-### BETA Version 4.0.0 - Program rework (GUI)
- - Application reworked for use with a GUI
-    - It's still somewhat experimental and may have a few bugs
-    
-### BETA Version 4.0.1 - Hotfix
- - Fixed: Application crashes if 'find account' button spammed as a result of too many threads being opened
-    - Limit 'step 1' action to once every 10 seconds (you shouldn't need to do this more than once per launch)
-    - Add default timeout of 5 seconds for http requests
-    - Added max of 10 workers for threading
-    
-### BETA Version 4.0.2 - Updated program version
- - Updated application to display the correct version
+### Version 3.2.0 - Steam & multi-drive support
+ - Updated README.md w/ contents page, etc.
+ - Now supports profiles when uplay is stored on <u>other</u> drives (A-Z)
+ - Now supports profiles when Siege is launched through Steam
  
-### BETA Version 4.0.3 - Added ico file
- - Removed /src/dist/ from exclusions, allowing those who build from source to add the icon
+### Version 3.1.1 - API error feedback
+ - Correct handling of R6Tabs API error, even when they return a code 200 with missing information
+ - User now informed if profiles could not be resolved
  
-### BETA Version 4.1.0 - Added Dark Theme and Light Theme
- - Default is set to 'dark'. You can use the light theme under the 'View' tab
- - App no longer looks like it's from the Windows XP era
+### Version 3.1.0 - Siege process checker
+ - Added an event to check whether R6 Siege (process) is running during script execution. Script will exit if Siege is running to prevent any issues with profiles not switching correctly.      
+
+### Version 3.0.2 - Updated troubleshooting / FAQ
+ - Updated troubleshooting FAQ for those having issues
+
+### Version 3.0.1 - Troubleshooting FAQ
+ - Added troubleshooting FAQ for those having issues
+
+### Version 3.0.0 - Program rework (menus, player name resolver...)
+ - Added menu
+ - Added on the fly backup enable / disable
+ - Added player ID to player name resolver - no more copy/pasting paths
+ - Added 'active profile' feedback before profile selection
+
+### Version 2.0.0 - Github release
+ - Easily switch from your main profile (containing all skins and attachments) to your competitive profile (containing legal skins).
+ - Automatically create backups of profile w/ timestamps
+
+### Version 1.0.0 - Initial release
+ - Internal (not available)
 
 &nbsp;
     
