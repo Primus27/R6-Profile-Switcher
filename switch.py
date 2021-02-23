@@ -14,8 +14,9 @@ import time
 from bs4 import BeautifulSoup
 import re
 import concurrent.futures
+import winreg
 
-program_version = "BETA v4.1.1"
+program_version = "BETA v4.1.2"
 
 
 class ProfileFunctions:
@@ -93,21 +94,45 @@ class ProfileFunctions:
         Get all profile paths, regardless of drives
         :return: List of profile paths, including steam (1843) / uplay (635) folder at end
         """
-        # Get all possible drive letters as paths
-        valid_drive_letters = [Path(f"{letter}:\\") for letter in ascii_uppercase]
 
-        # Reduce to all drives found on system
-        potential_drive_savegames_path = [
-            letter / "Program Files (x86)\\Ubisoft\\Ubisoft Game Launcher\\savegames" for letter in
-            valid_drive_letters if letter.exists()]
+        def enum_savegames_dir():
+            """
+            Enumerate all uplay savegames directories on user PC
+            :return: List of existing savegames directories
+            """
+            # Get all possible drive letters as paths
+            valid_drive_letters = [Path(f"{letter}:\\") for letter in ascii_uppercase]
 
-        # Reduce to ones where Ubisoft savegames folder exists
-        drive_savegames_path = [path for path in potential_drive_savegames_path if path.is_dir()]
+            # Reduce to all drives found on system
+            potential_savegames_path = [
+                drive / "Program Files (x86)\\Ubisoft\\Ubisoft Game Launcher\\savegames" for drive
+                in valid_drive_letters if drive.exists()]
+
+            # Reduce to ones where Ubisoft savegames folder exists
+            return [path for path in potential_savegames_path if path.is_dir()]
+
+        # Retrieve Uplay installation from registry
+        try:
+            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
+                                 "SOFTWARE\\WOW6432Node\\Ubisoft\\Launcher")
+            value = winreg.QueryValueEx(key, "InstallDir")
+
+        # Reg key not found
+        except FileNotFoundError:
+            savegames_path_list = enum_savegames_dir()
+
+        # Reg key found
+        else:
+            savegames_path_list = [Path(value[0]) / "savegames"]  # Single item list
+
+            # Check if reg key value is accurate
+            if not savegames_path_list[0].is_dir():
+                savegames_path_list = enum_savegames_dir()
 
         # Get all accounts
         accounts_paths = []
-        for drive in drive_savegames_path:
-            accounts_list = [folder for folder in drive.iterdir() if folder.is_dir()]
+        for savegames_path in savegames_path_list:
+            accounts_list = [folder for folder in savegames_path.iterdir() if folder.is_dir()]
             accounts_paths.extend(accounts_list)
 
         # List of Uplay App ID's relating to R6S (in priority order)
@@ -117,9 +142,9 @@ class ProfileFunctions:
 
         # Get all profiles
         profile_paths = []
-        for account_path in accounts_paths:  # /accounts_path/
+        for account_path in accounts_paths:  # /account_path/
             for r6_app_id in r6_app_id_list:
-                tmp_path = account_path / r6_app_id
+                tmp_path = account_path / r6_app_id  # /account_path/635/
                 if tmp_path.is_dir():
                     profile_paths.append(tmp_path)
                     # Stop checking that account once profile dir found

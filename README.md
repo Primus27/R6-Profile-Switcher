@@ -116,6 +116,9 @@ Whilst recent program versions check every drive for your accounts, it is still 
 
 # Changelog
 
+### BETA Version 4.1.2 - Improved account search for non-default Uplay installations
+ - Program accesses registry to determine where the Uplay Launcher is installed (this should be where the profiles are).
+
 ### BETA Version 4.1.1 - Improved account search compatibility
  - Some people had their 1.save under a different directory. This update improves compatibility for those with different Siege App IDs.
 
