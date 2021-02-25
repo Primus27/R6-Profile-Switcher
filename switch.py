@@ -16,7 +16,7 @@ import re
 import concurrent.futures
 import winreg
 
-program_version = "BETA v4.1.2"
+program_version = "BETA v4.2.0"
 
 
 class ProfileFunctions:
@@ -30,6 +30,9 @@ class ProfileFunctions:
         """
         self.logger = logger
         self.program_version = program_version
+        self.ubi_profile_name = "1.save"
+        self.main_profile_name = "1.save.main.bak"
+        self.comp_profile_name = "1.save.competitive.bak"
 
     @staticmethod
     def is_process_active(process_name):
@@ -461,6 +464,34 @@ class ProfileFunctions:
         # All UA used and no success
         return -1
 
+    def get_active_profile(self, profile_path):
+        """
+        Get name of currently active profile
+        :param profile_path: Path: Path of profile to be changed
+        :return: Active profile
+        """
+        ubi_profile_path = Path(profile_path) / self.ubi_profile_name
+        main_profile_path = Path(profile_path) / self.main_profile_name
+        comp_profile_path = Path(profile_path) / self.comp_profile_name
+
+        # No 1.save
+        if not ubi_profile_path.is_file():
+            return "Error"
+
+        # Neither bak exists
+        if not main_profile_path.is_file() and not comp_profile_path.is_file():
+            return "N/A"
+
+        # Current profile = Main
+        if comp_profile_path.is_file() and not main_profile_path.is_file():
+            return "Main"
+
+        # Current profile = Competitive
+        if main_profile_path.is_file() and not comp_profile_path.is_file():
+            return "Competitive"
+
+        return "Error"
+
     def s1_find_account(self):
         """
         Find R6 accounts on system and resolve into usernames
@@ -514,9 +545,9 @@ class ProfileFunctions:
             return -1
 
         # Enumerate files and define profile defaults
-        ubi_profile_path = profile_path / "1.save"
-        main_profile_path = profile_path / "1.save.main.bak"
-        comp_profile_path = profile_path / "1.save.competitive.bak"
+        ubi_profile_path = Path(profile_path) / self.ubi_profile_name
+        main_profile_path = Path(profile_path) / self.main_profile_name
+        comp_profile_path = Path(profile_path) / self.comp_profile_name
 
         self.logger.info(f"Account: {profile_name}")
 

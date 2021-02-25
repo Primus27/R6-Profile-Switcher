@@ -6,6 +6,7 @@ Author: Primus27
 import switch
 import main_window as ui_main
 import update_window as ui_update
+import getting_started_window as ui_getting_started
 from PyQt5 import QtCore, QtWidgets, QtGui
 import sys
 import argparse
@@ -67,6 +68,7 @@ class MainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
         # Defaults
         self.steps_state = [1, 0, 0, 0]  # 0 = No access, 1 = Access
         self.account_list = []
+        self.active_profile_list = []
         self.step1_activated_time = None
 
         # Link 'Kofi' button
@@ -75,10 +77,11 @@ class MainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
 
         # Step 1 - Link 'Find account'
         self.pushButton_find_account.clicked.connect(self.find_account_action)
-        self.pushButton_find_account.installEventFilter(self)
+        #self.pushButton_find_account.installEventFilter(self)
 
         # Step 2 - Link Combo Box
         self.comboBox_select_account.installEventFilter(self)
+        self.comboBox_select_account.currentIndexChanged.connect(self.set_active_profile_label)
 
         # Step 3 - Link Radio Buttons
         self.buttonGroup_radio.setExclusive(True)
@@ -91,9 +94,13 @@ class MainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
         self.action_check_for_updates.triggered.connect(lambda: self.update_dialog.show())
         self.update_dialog = UpdateWindow(self)
 
-        # Update window
+        # Dark theme
         self.action_dark_theme.triggered.connect(lambda: self.set_dark_theme(
             self.action_dark_theme.isChecked()))
+
+        # Getting started window
+        self.action_getting_started.triggered.connect(lambda: self.getting_started_dialog.show())
+        self.getting_started_dialog = GettingStartedWindow(self)
 
     def set_dark_theme(self, dark=True):
         """
@@ -138,6 +145,9 @@ class MainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
             self.profile_switch_obj.separator(use_all=True)
             return
 
+        # Get current active profile
+        self.get_all_active_profiles()
+
         # Update combo box based on account list
         self.update_combo_select_account()
 
@@ -177,6 +187,7 @@ class MainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
                 self.steps_state = [1, 1, 1, 0]
                 self.clear_radio_group()
                 self.change_img_colour()
+                self.set_active_profile_label()
 
         #return super(MainWindow, self).eventFilter(src, event)
         return False
@@ -243,6 +254,8 @@ class MainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
         # Clear radio buttons after completion
         self.clear_radio_group()
         self.change_img_colour(finished=True)
+        self.get_all_active_profiles()
+        self.set_active_profile_label()
 
     def incomplete_steps_feedback(self):
         """
@@ -316,6 +329,41 @@ class MainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
             return datetime.datetime.now() - self.step1_activated_time > \
                    datetime.timedelta(seconds=secs_wait)
 
+    def get_all_active_profiles(self):
+        """
+        Get current profiles for all accounts
+        """
+        self.active_profile_list = []
+
+        for account in self.account_list:
+            # Should never occur...
+            if not len(account) == 3:
+                self.active_profile_list.append("Error")
+                continue
+
+            # Get which account is active
+            active_profile = self.profile_switch_obj.get_active_profile(account[2])
+
+            if isinstance(active_profile, str):
+                self.active_profile_list.append(active_profile)
+            else:
+                self.active_profile_list.append("Error")
+
+    def set_active_profile_label(self):
+        """
+        Set active profile label text
+        """
+        index = self.comboBox_select_account.currentData()
+        if index is None:
+            profile = "Error"
+        else:
+            try:
+                profile = self.active_profile_list[index]
+            except IndexError:
+                profile = "Error"
+
+        self.label_active_profile.setText(f"Active: {profile}")
+
 
 class UpdateWindow(QtWidgets.QMainWindow, ui_update.Ui_UpdateWindow):
     """
@@ -355,6 +403,28 @@ class UpdateWindow(QtWidgets.QMainWindow, ui_update.Ui_UpdateWindow):
             self.label_main_text.setText(f"You are running the latest version!")
         else:  # Error
             self.label_main_text.setText(f"Unable to check for latest version!")
+
+
+class GettingStartedWindow(QtWidgets.QMainWindow, ui_getting_started.Ui_GettingStartedWindow):
+    """
+    Class for GettingStarted window - Instructions to help new users
+    """
+    def __init__(self, parent=None):
+        """
+        Initialiser
+        """
+        super(GettingStartedWindow, self).__init__(parent)
+        self.setupUi(self)
+
+        # Defaults
+        width, height = 900, 550  # Window width and height
+        self.resize(width, height)
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 10, width - 19, height - 19))
+        self.setWindowTitle("Getting Started")
+        self.setWindowIcon(QtGui.QIcon(resource_path("r6-logo.png")))
+
+        # Close button
+        self.pushButton_close.clicked.connect(lambda: self.hide())
 
 
 class QPlainTextEditLogger(logging.Handler):
