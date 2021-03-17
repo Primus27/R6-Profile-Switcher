@@ -135,6 +135,7 @@ class MainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
         """
         if not self.time_delta_allowed():
             return
+        self.step1_activated_time = datetime.datetime.now()
 
         self.steps_state = [1, 0, 0, 0]
         self.account_list = self.profile_switch_obj.s1_find_account()
@@ -229,12 +230,19 @@ class MainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
         # Get results of selected account, profile, backup flag, etc.
         account_index = self.comboBox_select_account.currentData()
         selected_account_info = self.account_list[account_index]
+        if self.buttonGroup_radio.checkedButton() is None:
+            logging.getLogger().error("[-] Unable to perform action - no profile selected")
+            self.steps_state = [1, 1, 1, 0]
+            self.change_img_colour()
+            self.profile_switch_obj.separator(use_all=True)
+            return
         profile_selection = str(self.buttonGroup_radio.checkedButton().text()).lower()
         backup_flag = self.action_profile_backup.isChecked()
 
         # Should never occur...
         if not len(selected_account_info) == 3:
             logging.getLogger().error("[-] Unable to perform action - internal error")
+            self.profile_switch_obj.separator(use_all=True)
             return
         
         player_name = selected_account_info[0]
@@ -243,6 +251,7 @@ class MainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
         # Check that all elements contain data
         if not all([player_name, account_path, profile_selection]):
             logging.getLogger().error("[-] Unable to perform action - internal error")
+            self.profile_switch_obj.separator(use_all=True)
             return
 
         # Switch profile

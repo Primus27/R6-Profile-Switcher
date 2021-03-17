@@ -160,6 +160,13 @@ Initially, the program will look for your Uplay installation and check if the sa
 
 # Changelog
 
+### BETA Version 4.3.0 - Big bug fixes
+ - Stopped program from crashing when:
+    - Trying to find accounts (API response not properly handled),
+    - User keeps searching for accounts after none were found (timeout issue),
+    - User swaps profiles a second time and also doesn't select a profile (honestly surprised this one made it through testing).
+ - Proper error feedback when user has authorisation to switch profiles, but no profile is selected.
+
 ### BETA Version 4.2.0 - Added Active Profile Indicator and 'Getting Started' Menu
  - Program now tells you what profile is active for the selected account. This means you don't have to switch profiles just to see the active one.
  - Added a 'Getting started' window under 'View' for noobs.

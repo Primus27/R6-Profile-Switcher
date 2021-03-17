@@ -16,7 +16,7 @@ import re
 import concurrent.futures
 import winreg
 
-program_version = "BETA v4.2.0"
+program_version = "BETA v4.3.0"
 
 
 class ProfileFunctions:
@@ -274,20 +274,17 @@ class ProfileFunctions:
                 error_feedback(uplay_id, response[1])
 
         elif isinstance(response, dict):  # Response returned
-            try:
-                response_status = int(response["status"])
-                response_message = f"{str(response['error'])} {str(response['message'])}"
-            except ValueError:
-                error_feedback(uplay_id, "API Request Information Missing")
+            response_status = int(response.get('status', 500))
+            #  Successful response but error message within response
+            account_name = response.get('player', None)
+            if isinstance(account_name, dict):
+                account_name = account_name.get('p_name', None)
+            if response_status != 200 or not account_name:
+                response_message = f"{str(response.get('error', 'API issue'))}-{str(response.get('message', 'No reason given.'))}"
+                error_feedback(uplay_id, response_message[:-1])
+            # Success
             else:
-                #  Successful response but error message within response
-                if response_status != 200:
-                    error_feedback(uplay_id, response_message[:-1])
-
-                # Success
-                else:
-                    account_name = response["player"]["p_name"]
-                    return account_name, uplay_id
+                return account_name, uplay_id
 
         """
         1. R6 Tracker
